@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, borderRadius } from '../../theme/theme';
+import { colors, typograph, borderRadius } from '../../theme/theme';
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -76,12 +76,12 @@ export const Avatar: React.FC<AvatarProps> = ({
   };
 
   const generateBackgroundColor = (name: string): string => {
-    const colors = [
+    const avatarColors = [
       '#EF4444', '#F59E0B', '#10B981', '#3B82F6', 
       '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'
     ];
     const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return colors[hash % colors.length];
+    return avatarColors[hash % avatarColors.length];
   };
 
   const avatarSize = getSize();
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   initials: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     fontWeight: '600',
   },
   badge: {

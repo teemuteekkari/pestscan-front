@@ -1,5 +1,3 @@
-// src/store/AuthContext.tsx
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserDto, Role } from '../types/api.types';
 import { authService } from '../services/auth.service';

@@ -1,5 +1,3 @@
-// src/store/scoutingStore.ts
-
 import { create } from 'zustand';
 import {
   ScoutingSessionDetailDto,

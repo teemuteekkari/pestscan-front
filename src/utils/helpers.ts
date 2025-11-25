@@ -1,4 +1,4 @@
-// src/utils/helpers.ts
+// src/utils/helpers.ts (Remove getStatusColor and getStatusLabel)
 
 import { format, parseISO, getWeek, getYear } from 'date-fns';
 import { SpeciesCode, ObservationCategory } from '../types/api.types';
@@ -15,7 +15,6 @@ export const formatDate = (date: string | Date, formatStr: string = 'MMM dd, yyy
 
 export const formatTime = (time: string): string => {
   try {
-    // Assuming time is in HH:mm:ss format
     const [hours, minutes] = time.split(':');
     return `${hours}:${minutes}`;
   } catch (error) {
@@ -102,21 +101,7 @@ export const formatPercentage = (num: number): string => {
   return `${num.toFixed(1)}%`;
 };
 
-// Status utilities
-export const getStatusColor = (status: string): string => {
-  const statusColors: Record<string, string> = {
-    DRAFT: '#95a5a6',
-    IN_PROGRESS: '#3498db',
-    COMPLETED: '#2ecc71',
-    CANCELLED: '#e74c3c',
-    ACTIVE: '#2ecc71',
-    SUSPENDED: '#e67e22',
-    PENDING_ACTIVATION: '#f39c12',
-  };
-  
-  return statusColors[status] || '#95a5a6';
-};
-
+// Status label utility (keep this, but remove getStatusColor)
 export const getStatusLabel = (status: string): string => {
   return status
     .split('_')
