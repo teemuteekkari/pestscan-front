@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { ScoutingSessionDetailDto, SessionStatus } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 import { formatDate, getStatusColor, getStatusLabel } from '../../utils/helpers';
 
 interface SessionCardProps {
@@ -121,11 +121,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
   },
   subtitle: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   statusText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.surface,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   cropText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginLeft: spacing.xs,
   },
@@ -162,12 +162,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     marginLeft: spacing.xs,
   },
   notes: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.sm,
     fontStyle: 'italic',

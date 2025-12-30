@@ -1,5 +1,4 @@
 // src/screens/dashboard/DashboardScreen.tsx
-
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -8,50 +7,26 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { Card, Button, ActivityIndicator } from 'react-native-paper';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { DashboardStackParamList } from '../../navigation/DashboardNavigator';
 import { useAuth } from '../../store/AuthContext';
-import { useFarmStore } from '../../store/farmStore';
-import { useScoutingStore } from '../../store/scoutingStore';
-import { Role } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
+import { farmService } from '../../services/farm.service';
+import { Role, FarmResponse } from '../../types/api.types';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 import { formatDate, getCurrentWeek, getCurrentYear } from '../../utils/helpers';
 
 type Props = NativeStackScreenProps<DashboardStackParamList, 'Dashboard'>;
 
-interface KPICardProps {
-  title: string;
-  value: string | number;
-  icon: keyof typeof Ionicons.glyphMap;
-  color: string;
-  subtitle?: string;
-}
-
-const KPICard: React.FC<KPICardProps> = ({ title, value, icon, color, subtitle }) => (
-  <Card style={[styles.kpiCard, shadows.md]}>
-    <View style={styles.kpiContent}>
-      <View style={[styles.kpiIconContainer, { backgroundColor: `${color}20` }]}>
-        <Ionicons name={icon} size={32} color={color} />
-      </View>
-      <View style={styles.kpiTextContainer}>
-        <Text style={styles.kpiTitle}>{title}</Text>
-        <Text style={[styles.kpiValue, { color }]}>{value}</Text>
-        {subtitle && <Text style={styles.kpiSubtitle}>{subtitle}</Text>}
-      </View>
-    </View>
-  </Card>
-);
-
 const DashboardScreen: React.FC<Props> = ({ navigation }) => {
-  const { user, hasRole } = useAuth();
-  const { farms, currentFarm, fetchFarms } = useFarmStore();
-  const { sessions, fetchSessions } = useScoutingStore();
-  
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
+  const [farms, setFarms] = useState<FarmResponse[]>([]);
+  const [currentFarm, setCurrentFarm] = useState<FarmResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -59,22 +34,26 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
   const loadDashboardData = async () => {
     try {
-      await fetchFarms();
+      setLoading(true);
+      const farmsData = await farmService.getFarms();
+      setFarms(farmsData);
       
-      if (currentFarm) {
-        await fetchSessions(currentFarm.id);
+      // Set first farm as current if available
+      if (farmsData.length > 0 && !currentFarm) {
+        setCurrentFarm(farmsData[0]);
       }
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      Alert.alert('Error', 'Failed to load farms');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
+    setRefreshing(true);
     await loadDashboardData();
-    setIsRefreshing(false);
+    setRefreshing(false);
   };
 
   const handleFarmSelect = () => {
@@ -84,24 +63,25 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
   const handleNewSession = () => {
     if (currentFarm) {
       navigation.navigate('FarmDetail', { farmId: currentFarm.id });
+    } else {
+      Alert.alert('No Farm Selected', 'Please select a farm first');
     }
   };
 
-  // Calculate KPIs
-  const activeSessions = sessions.filter(s => s.status === 'IN_PROGRESS').length;
-  const completedThisWeek = sessions.filter(s => {
-    if (!s.completedAt) return false;
-    const sessionWeek = getCurrentWeek();
-    return s.status === 'COMPLETED' && sessionWeek === getCurrentWeek();
-  }).length;
-  
-  const totalObservations = sessions.reduce((sum, session) => {
-    return sum + session.sections.reduce((sectionSum, section) => {
-      return sectionSum + section.observations.length;
-    }, 0);
-  }, 0);
+  // Helper function to check user roles
+  const hasRole = (roles: Role | Role[]): boolean => {
+    if (!user?.role) return false;
+    const roleArray = Array.isArray(roles) ? roles : [roles];
+    return roleArray.includes(user.role);
+  };
 
-  if (isLoading) {
+  // Mock data for now - TODO: Replace with actual scouting service
+  const sessions: any[] = []; // Will be populated from scouting service later
+  const activeSessions = 0;
+  const completedThisWeek = 0;
+  const totalObservations = 0;
+
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -114,14 +94,21 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
       style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
     >
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Hello, {user?.firstName}!</Text>
-          <Text style={styles.date}>{formatDate(new Date(), 'EEEE, MMMM dd, yyyy')}</Text>
+          <Text style={styles.greeting}>Hello, {user?.firstName || 'User'}!</Text>
+          <Text style={styles.date}>
+            {new Date().toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.farmSelector}
@@ -182,7 +169,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
             <TouchableOpacity
               style={[styles.actionCard, { backgroundColor: colors.secondary }]}
-              onPress={() => navigation.navigate('FarmList')}
+              onPress={() => Alert.alert('Coming Soon', 'Analytics feature coming soon')}
             >
               <Ionicons name="analytics" size={40} color={colors.surface} />
               <Text style={styles.actionText}>View Analytics</Text>
@@ -190,7 +177,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
             <TouchableOpacity
               style={[styles.actionCard, { backgroundColor: colors.accent }]}
-              onPress={() => navigation.navigate('FarmList')}
+              onPress={() => Alert.alert('Coming Soon', 'Reports feature coming soon')}
             >
               <Ionicons name="document-text" size={40} color={colors.surface} />
               <Text style={styles.actionText}>Reports</Text>
@@ -207,69 +194,23 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       )}
 
-      {/* Recent Sessions */}
-      {sessions.length > 0 && (
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Sessions</Text>
-            <Button
-              mode="text"
-              onPress={() => {/* Navigate to all sessions */}}
-              compact
-            >
-              View All
-            </Button>
-          </View>
-          
-          {sessions.slice(0, 3).map((session) => (
-            <Card key={session.id} style={[styles.sessionCard, shadows.sm]}>
-              <Card.Content>
-                <View style={styles.sessionHeader}>
-                  <Text style={styles.sessionTitle}>
-                    {formatDate(session.sessionDate)}
-                  </Text>
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      { backgroundColor: getStatusColor(session.status) },
-                    ]}
-                  >
-                    <Text style={styles.statusText}>
-                      {session.status.replace('_', ' ')}
-                    </Text>
-                  </View>
-                </View>
-                {session.crop && (
-                  <Text style={styles.sessionDetail}>
-                    Crop: {session.crop} {session.variety ? `(${session.variety})` : ''}
-                  </Text>
-                )}
-                <Text style={styles.sessionDetail}>
-                  Week {session.weekNumber} • {session.sections.length} sections
-                </Text>
-              </Card.Content>
-            </Card>
-          ))}
-        </View>
-      )}
-
       {/* Empty State */}
-      {sessions.length === 0 && (
+      {farms.length === 0 && (
         <View style={styles.emptyState}>
-          <Ionicons name="clipboard-outline" size={80} color={colors.border} />
-          <Text style={styles.emptyTitle}>No Sessions Yet</Text>
+          <Ionicons name="business-outline" size={80} color={colors.border} />
+          <Text style={styles.emptyTitle}>No Farms Yet</Text>
           <Text style={styles.emptyText}>
             {hasRole(Role.SCOUT)
-              ? 'Wait for your manager to assign a session'
-              : 'Create your first scouting session to get started'}
+              ? 'Wait for your manager to add you to a farm'
+              : 'Create your first farm to get started'}
           </Text>
           {hasRole([Role.MANAGER, Role.FARM_ADMIN, Role.SUPER_ADMIN]) && (
             <Button
               mode="contained"
-              onPress={handleNewSession}
+              onPress={handleFarmSelect}
               style={styles.emptyButton}
             >
-              Create Session
+              Add Farm
             </Button>
           )}
         </View>
@@ -278,15 +219,29 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-const getStatusColor = (status: string): string => {
-  const statusColors: Record<string, string> = {
-    DRAFT: colors.textSecondary,
-    IN_PROGRESS: colors.info,
-    COMPLETED: colors.success,
-    CANCELLED: colors.error,
-  };
-  return statusColors[status] || colors.textSecondary;
-};
+// KPI Card Component
+interface KPICardProps {
+  title: string;
+  value: number | string;
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+  subtitle?: string;
+}
+
+const KPICard: React.FC<KPICardProps> = ({ title, value, icon, color, subtitle }) => (
+  <Card style={[styles.kpiCard, shadows.sm]}>
+    <Card.Content style={styles.kpiContent}>
+      <View style={[styles.kpiIconContainer, { backgroundColor: `${color}20` }]}>
+        <Ionicons name={icon} size={28} color={color} />
+      </View>
+      <View style={styles.kpiTextContainer}>
+        <Text style={styles.kpiTitle}>{title}</Text>
+        <Text style={[styles.kpiValue, { color }]}>{value}</Text>
+        {subtitle && <Text style={styles.kpiSubtitle}>{subtitle}</Text>}
+      </View>
+    </Card.Content>
+  </Card>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -305,12 +260,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   greeting: {
-    ...typography.h2,
+    ...typograph.h2,
     color: colors.text,
     marginBottom: spacing.xs,
   },
   date: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginBottom: spacing.md,
   },
@@ -323,7 +278,7 @@ const styles = StyleSheet.create({
     ...shadows.sm,
   },
   farmName: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     flex: 1,
     marginHorizontal: spacing.sm,
@@ -342,7 +297,6 @@ const styles = StyleSheet.create({
   },
   kpiContent: {
     flexDirection: 'row',
-    padding: spacing.md,
     alignItems: 'center',
   },
   kpiIconContainer: {
@@ -357,31 +311,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   kpiTitle: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginBottom: spacing.xs,
   },
   kpiValue: {
-    ...typography.h2,
+    ...typograph.h2,
     fontWeight: 'bold',
   },
   kpiSubtitle: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
   section: {
     marginBottom: spacing.lg,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
   sectionTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
+    marginBottom: spacing.md,
   },
   actionGrid: {
     flexDirection: 'row',
@@ -398,56 +347,24 @@ const styles = StyleSheet.create({
     ...shadows.md,
   },
   actionText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.surface,
     fontWeight: '600',
     marginTop: spacing.sm,
     textAlign: 'center',
-  },
-  sessionCard: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.sm,
-  },
-  sessionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  sessionTitle: {
-    ...typography.h4,
-    color: colors.text,
-    flex: 1,
-  },
-  statusBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.sm,
-  },
-  statusText: {
-    ...typography.caption,
-    color: colors.surface,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  sessionDetail: {
-    ...typography.bodySmall,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
   },
   emptyState: {
     alignItems: 'center',
     paddingVertical: spacing.xxl,
   },
   emptyTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   emptyText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: spacing.lg,

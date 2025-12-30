@@ -7,7 +7,7 @@ import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { CreateGreenhouseRequest, GreenhouseDto } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface GreenhouseFormProps {
   initialData?: Partial<GreenhouseDto>;
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   sectionTitle: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.text,
     marginBottom: spacing.sm,
     fontWeight: '600',
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   summaryTitle: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.xs,
@@ -314,11 +314,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   summaryLabel: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
   },
   summaryValue: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
   },

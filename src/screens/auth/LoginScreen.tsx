@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, Image, KeyboardAvoidingView, TouchableOpacity }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { LoginRequest } from '../../types/api.types';
 
 interface LoginScreenProps {
@@ -189,13 +189,13 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
   appName: {
-    ...typography.h2,
+    ...typograph.h2,
     color: colors.text,
     fontWeight: '700',
     marginBottom: spacing.xs,
   },
   tagline: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
   },
   formSection: {
@@ -204,13 +204,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
   },
   title: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     fontWeight: '700',
     marginBottom: spacing.xs,
   },
   subtitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     marginBottom: spacing.xl,
   },
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   forgotPasswordText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.primary,
     fontWeight: '600',
   },
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
   },
   dividerText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginHorizontal: spacing.md,
   },
@@ -247,8 +247,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     textAlign: 'center',
   },
 });
+export default LoginScreen;

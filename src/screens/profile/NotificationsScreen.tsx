@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card, Badge } from '../../components/common';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface Notification {
   id: string;
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   filterText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '500',
   },
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   title: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     flex: 1,
@@ -331,13 +331,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   message: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginBottom: spacing.xs,
     lineHeight: 20,
   },
   timestamp: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
   emptyContainer: {
@@ -348,13 +348,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl * 2,
   },
   emptyTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   emptyText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
   },

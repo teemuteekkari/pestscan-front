@@ -11,7 +11,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   label: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '500',
   },
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -217,12 +217,12 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   errorText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.error || '#DC2626',
     flex: 1,
   },
   helperText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
 });

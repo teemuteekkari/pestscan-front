@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, spacing, typography, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, shadows } from '../../theme/theme';
 
 interface TabBarRoute {
   name: string;
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs / 2,
   },
   label: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     fontSize: 11,
   },

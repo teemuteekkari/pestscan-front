@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface ForgotPasswordScreenProps {
   navigation: any;
@@ -213,14 +213,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   title: {
-    ...typography.h2,
+    ...typograph.h2,
     color: colors.text,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
   subtitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: spacing.xl,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   backToLoginText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
   },
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   helpText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     textAlign: 'center',
   },
@@ -260,26 +260,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   successTitle: {
-    ...typography.h2,
+    ...typograph.h2,
     color: colors.text,
     fontWeight: '700',
     marginTop: spacing.xl,
     marginBottom: spacing.sm,
   },
   successMessage: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: spacing.xs,
   },
   emailText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
     marginBottom: spacing.lg,
   },
   instructionText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     textAlign: 'center',
     marginBottom: spacing.xl,
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   infoText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     flex: 1,
     lineHeight: 20,
@@ -308,12 +308,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   resendText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
   },
   resendLink: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.primary,
     fontWeight: '600',
   },
 });
+export default ForgotPasswordScreen;

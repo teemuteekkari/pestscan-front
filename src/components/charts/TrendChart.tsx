@@ -4,7 +4,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LineChart } from './LineChart';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface TrendData {
   labels: string[];
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     fontWeight: '600',
   },
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   trendText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     fontWeight: '600',
   },
   comparisonContainer: {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   comparisonText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     textAlign: 'center',
   },

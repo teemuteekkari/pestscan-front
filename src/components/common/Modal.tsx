@@ -13,7 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type ModalSize = 'sm' | 'md' | 'lg' | 'full';
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   title: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     flex: 1,
   },

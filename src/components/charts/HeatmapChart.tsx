@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, ViewStyle } from 'react-native';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface HeatMapCell {
   row: number;
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     marginBottom: spacing.md,
     fontWeight: '600',
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   headerText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     fontWeight: '600',
     textAlign: 'center',
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   rowLabelText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     fontWeight: '600',
     textAlign: 'center',
@@ -190,12 +190,12 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   cellValue: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.text,
     fontWeight: '600',
   },
   cellLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.text,
     fontSize: 8,
   },
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   legendTitle: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.sm,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   legendText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
 });

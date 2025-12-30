@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text } from 'react-native-paper';
-import { colors, spacing, typography } from '../../theme/theme';
+import { colors, spacing, typograph } from '../../theme/theme';
 
 interface LoadingSpinnerProps {
   message?: string;
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   message: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     marginTop: spacing.md,
     textAlign: 'center',

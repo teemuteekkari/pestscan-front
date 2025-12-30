@@ -1,4 +1,4 @@
-// src/components/ConfirmDialog.tsx
+// src/components/common/ConfirmDialog.tsx
 
 import React from 'react';
 import {
@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, typography, borderRadius, shadows } from '../theme/theme';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 import { Button } from './Button';
 
 type DialogVariant = 'default' | 'warning' | 'danger';
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   dialog: {
     backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.lg, // ✅ Now imported
     width: '100%',
     maxWidth: 400,
     padding: spacing.lg,
@@ -151,13 +151,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
   message: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,

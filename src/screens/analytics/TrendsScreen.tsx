@@ -5,10 +5,10 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Screen } from '../../components/layout/Screen';
 import { TrendChart } from '../../components/charts/TrendChart';
 import { LineChart } from '../../components/charts/LineChart';
-import { Card } from '../../components/Card';
-import { Badge } from '../../components/Badge';
+import { Card } from '../../components/common/Card';
+import { Badge } from '../../components/common/Badge';
 import { Row } from '../../components/layout/Row';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface TrendsScreenProps {
   navigation: any;
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   cardTitle: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   rangeButtonText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -235,13 +235,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   insightTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.xs,
   },
   insightText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
   },
   predictionCard: {
@@ -254,16 +254,16 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   predictionLabel: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   predictionValue: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
   },
   predictionNote: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.sm,
     fontStyle: 'italic',

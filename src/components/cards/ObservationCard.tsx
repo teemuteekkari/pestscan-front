@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { ScoutingObservationDto, ObservationCategory, SpeciesCode } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 
 interface ObservationCardProps {
   observation: ScoutingObservationDto;
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   speciesName: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.text,
     fontWeight: '600',
   },
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   categoryText: {
-    ...typography.caption,
+    ...typograph.caption,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   countText: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.surface,
     fontWeight: '700',
   },
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   locationText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginLeft: spacing.xs,
     flex: 1,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   notesText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     flex: 1,
     fontStyle: 'italic',
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   metadataText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
 });

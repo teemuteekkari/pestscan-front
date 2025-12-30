@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, typography, shadows } from '../theme/theme';
+import { colors, spacing, typograph, shadows } from '../../theme/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface HeaderAction {
@@ -135,12 +135,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.surface,
     fontWeight: '600',
   },
   subtitle: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.surface,
     opacity: 0.8,
     marginTop: spacing.xs / 2,

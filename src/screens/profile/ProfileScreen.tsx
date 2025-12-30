@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card, Avatar, Badge } from '../../components/common';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { UserDto, Role } from '../../types/api.types';
 import { ROLE_LABELS } from '../../constants/roles';
 
@@ -281,13 +281,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   userName: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     fontWeight: '700',
     marginBottom: spacing.xs,
   },
   userEmail: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     marginBottom: spacing.sm,
   },
@@ -304,12 +304,12 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.primary}15`,
   },
   editButtonText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
   },
   sectionTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -325,11 +325,11 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   infoLabelText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
   },
   infoValue: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '500',
   },
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuItemText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   menuItemRight: {
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
   },
   menuBadgeText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.surface,
     fontSize: 10,
     fontWeight: '700',
@@ -383,15 +383,16 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.error}10`,
   },
   logoutText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.error,
     fontWeight: '600',
   },
   versionText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: spacing.lg,
     marginBottom: spacing.xl,
   },
 });
+export default ProfileScreen;

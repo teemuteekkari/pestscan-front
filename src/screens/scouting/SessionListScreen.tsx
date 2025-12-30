@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card, Badge, Input } from '../../components/common/';
 import { FloatingActionButton } from '../../components/navigation/FloatingActionButton';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { ScoutingSessionDetailDto, SessionStatus } from '../../types/api.types';
 
 interface SessionListScreenProps {
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   filterText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     fontWeight: '500',
   },
@@ -365,12 +365,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sessionDate: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
   },
   weekNumber: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs / 2,
   },
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   cropText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
   },
   statsRow: {
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   statText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
   emptyContainer: {
@@ -408,13 +408,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl * 2,
   },
   emptyTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   emptyText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
   },

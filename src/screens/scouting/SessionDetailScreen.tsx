@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card, Button, Badge } from '../../components/common';
@@ -7,19 +8,13 @@ import { StatCard, StatCardGrid } from '../../components/cards/StatCard';
 import { ObservationCard } from '../../components/cards/ObservationCard';
 import { Row } from '../../components/layout/Row';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { ScoutingSessionDetailDto, SessionStatus } from '../../types/api.types';
+import { ScoutingStackParamList } from '../../navigation/ScoutingNavigator';
 
-interface SessionDetailScreenProps {
-  navigation: any;
-  route: {
-    params: {
-      sessionId: string;
-    };
-  };
-}
+type Props = NativeStackScreenProps<ScoutingStackParamList, 'SessionDetail'>;
 
-export const SessionDetailScreen: React.FC<SessionDetailScreenProps> = ({
+export const SessionDetailScreen: React.FC<Props> = ({
   navigation,
   route,
 }) => {
@@ -94,16 +89,24 @@ export const SessionDetailScreen: React.FC<SessionDetailScreenProps> = ({
     }
   };
 
+  // ✅ Fixed: Placeholder for Edit (screen doesn't exist yet)
   const handleEdit = () => {
-    navigation.navigate('EditSession', { sessionId });
+    Alert.alert('Coming Soon', 'Edit session feature will be available soon');
+    // TODO: Uncomment when EditSession screen is created
+    // navigation.navigate('EditSession', { sessionId });
   };
 
+  // ✅ Fixed: Placeholder for Add Observation (screen doesn't exist yet)
   const handleAddObservation = () => {
-    navigation.navigate('RecordObservation', { sessionId });
+    Alert.alert('Coming Soon', 'Record observation feature will be available soon');
+    // TODO: Uncomment when RecordObservation screen is created
+    // navigation.navigate('RecordObservation', { sessionId });
   };
 
+  // ✅ Fixed: Added required targetId parameter
   const handleViewGrid = () => {
-    navigation.navigate('ObservationGrid', { sessionId });
+    const targetId = session?.sections[0]?.targetId || 'greenhouse-1';
+    navigation.navigate('ObservationGrid', { sessionId, targetId });
   };
 
   const handleCompleteSession = () => {
@@ -319,11 +322,14 @@ export const SessionDetailScreen: React.FC<SessionDetailScreenProps> = ({
             <ObservationCard
               key={observation.id}
               observation={observation}
-              onPress={() =>
-                navigation.navigate('ObservationDetail', {
-                  observationId: observation.id,
-                })
-              }
+              onPress={() => {
+                // ✅ Fixed: Added placeholder for ObservationDetail
+                Alert.alert('Coming Soon', 'Observation detail view will be available soon');
+                // TODO: Uncomment when ObservationDetail screen is created
+                // navigation.navigate('ObservationDetail', {
+                //   observationId: observation.id,
+                // })
+              }}
             />
           ))}
         </View>
@@ -376,17 +382,17 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   sessionDate: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
   },
   weekNumber: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs / 2,
   },
   sectionTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -400,12 +406,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginBottom: spacing.xs / 2,
   },
   infoValue: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   observationsSection: {
@@ -426,13 +432,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   recommendationType: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     textTransform: 'uppercase',
     marginBottom: spacing.xs / 2,
   },
   recommendationText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   actionsContainer: {
@@ -441,4 +447,5 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
 });
-export default SessionDetailScreen
+
+export default SessionDetailScreen;

@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, ViewStyle } from 'react-native';
 import { LineChart as RNLineChart } from 'react-native-chart-kit';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     marginBottom: spacing.md,
     fontWeight: '600',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   legendText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
 });

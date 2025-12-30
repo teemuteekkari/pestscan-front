@@ -8,7 +8,7 @@ import { Card } from '../../components/common/Card';
 import { Badge } from '../../components/common/Badge';
 import { FloatingActionButton } from '../../components/navigation/FloatingActionButton';
 import { Input } from '../../components/common/Input';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { FieldBlockDto } from '../../types/api.types';
 
 interface FieldBlockListScreenProps {
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     fontWeight: '600',
   },
@@ -277,12 +277,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
   },
   statValue: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.primary,
     fontWeight: '700',
   },
   statLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   moreText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
   emptyContainer: {
@@ -304,13 +304,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl * 2,
   },
   emptyTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   emptyText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
   },

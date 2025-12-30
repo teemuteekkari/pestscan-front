@@ -10,7 +10,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -98,7 +98,7 @@ export const Button: React.FC<ButtonProps> = ({
             paddingVertical: spacing.sm,
             minHeight: 36,
           },
-          text: { ...typography.bodySmall },
+          text: { ...typograph.bodySmall },
           iconSize: 16,
         };
       case 'lg':
@@ -108,7 +108,7 @@ export const Button: React.FC<ButtonProps> = ({
             paddingVertical: spacing.md,
             minHeight: 52,
           },
-          text: { ...typography.subtitle },
+          text: { ...typograph.subtitle },
           iconSize: 24,
         };
       default: // md
@@ -118,7 +118,7 @@ export const Button: React.FC<ButtonProps> = ({
             paddingVertical: spacing.sm,
             minHeight: 44,
           },
-          text: { ...typography.body },
+          text: { ...typograph.body },
           iconSize: 20,
         };
     }

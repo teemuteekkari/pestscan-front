@@ -5,8 +5,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { FarmResponse } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
-import { getStatusColor, getStatusLabel } from '../../utils/helpers';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
+import { getStatusLabel } from '../../utils/helpers';
+import { getStatusColor } from '../../theme/colors'
 
 interface FarmCardProps {
   farm: FarmResponse;
@@ -105,11 +106,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
   },
   farmTag: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
@@ -119,13 +120,13 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   statusText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.surface,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   description: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginBottom: spacing.sm,
   },
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   infoText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginLeft: spacing.xs,
   },
@@ -159,11 +160,11 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.md,
   },
   statValue: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.primary,
   },
   statLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },

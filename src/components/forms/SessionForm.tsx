@@ -10,7 +10,7 @@ import {
   SessionTargetRequest,
   ScoutingSessionDetailDto 
 } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface SessionFormProps {
   farmId: string;
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   sectionTitle: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.text,
     marginBottom: spacing.sm,
     fontWeight: '600',
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   infoText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     flex: 1,
   },

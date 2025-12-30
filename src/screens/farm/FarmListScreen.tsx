@@ -8,7 +8,7 @@ import { FarmCard } from '../../components/cards/FarmCard';
 import { FloatingActionButton } from '../../components/navigation/FloatingActionButton';
 import { Input, Badge } from '../../components/common';
 import { Row } from '../../components/layout/Row';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { FarmResponse, SubscriptionStatus } from '../../types/api.types';
 
 interface FarmListScreenProps {
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   filtersLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginBottom: spacing.xs,
     textTransform: 'uppercase',
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   filterChipText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     fontWeight: '500',
   },
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   filterBadgeText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.text,
     fontSize: 10,
     fontWeight: '700',
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xs,
   },
   resultsText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
   },
   listContent: {
@@ -419,13 +419,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl * 2,
   },
   emptyTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   emptyText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: spacing.lg,
@@ -440,8 +440,9 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.primary}15`,
   },
   emptyButtonText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
   },
 });
+export default FarmListScreen;

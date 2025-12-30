@@ -3,14 +3,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Screen } from '../../components/layout/Screen';
-import { Card } from '../../components/Card';
+import { Card } from '../../components/common/Card';
 import { BarChart } from '../../components/charts/BarChart';
 import { LineChart } from '../../components/charts/LineChart';
-import { Button } from '../../components/Button';
-import { Input } from '../../components/Input';
+import { Button } from '../../components/common/Button';
+import { Input } from '../../components/common/Input';
 import { StatCard, StatCardGrid } from '../../components/cards/StatCard';
 import { Row } from '../../components/layout/Row';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface MonthlyReportScreenProps {
   navigation: any;
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   cardTitle: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -219,13 +219,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   highlightTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.xs,
   },
   highlightText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     lineHeight: 20,
   },
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   recommendationNumber: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.surface,
     fontWeight: '700',
     backgroundColor: colors.primary,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   recommendationText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     flex: 1,
   },

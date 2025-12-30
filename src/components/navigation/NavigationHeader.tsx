@@ -4,7 +4,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, spacing, typography, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, shadows } from '../../theme/theme';
 
 interface NavigationHeaderProps {
   title: string;
@@ -126,12 +126,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     fontWeight: '600',
   },
   subtitle: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs / 2,
   },

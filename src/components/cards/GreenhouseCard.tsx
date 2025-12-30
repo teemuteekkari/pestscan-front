@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { GreenhouseDto } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 
 interface GreenhouseCardProps {
   greenhouse: GreenhouseDto;
@@ -141,11 +141,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
   },
   greenhouseId: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
@@ -155,13 +155,13 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   statusText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.surface,
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   description: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginBottom: spacing.sm,
   },
@@ -182,11 +182,11 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.sm,
   },
   statValue: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.primary,
   },
   statLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
     textAlign: 'center',
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   spotCheckText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     marginLeft: spacing.xs,
   },
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   tagLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginBottom: spacing.xs,
   },
@@ -230,11 +230,11 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   tagText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.primary,
   },
   moreText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginLeft: spacing.xs,
   },

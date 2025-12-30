@@ -17,7 +17,7 @@ export default function App() {
           <AuthProvider>
             <StatusBar style="auto" />
             <AppNavigator />
-            {/* <Toast config={toastConfig} /> */}
+            <Toast config={toastConfig} />
           </AuthProvider>
         </PaperProvider>
       </SafeAreaProvider>

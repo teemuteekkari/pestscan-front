@@ -4,7 +4,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
 
 type StatCardVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   title: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     textTransform: 'uppercase',
     fontWeight: '600',
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   value: {
-    ...typography.h2,
+    ...typograph.h2,
     fontWeight: '700',
     marginBottom: spacing.xs,
   },
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   subtitle: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     flex: 1,
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   trendText: {
-    ...typography.caption,
+    ...typograph.caption,
     fontWeight: '600',
   },
   loadingContainer: {

@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar } from '../common/Avatar';
 import { Divider } from '../layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { Role } from '../../types/api.types';
 
 interface DrawerMenuItem {

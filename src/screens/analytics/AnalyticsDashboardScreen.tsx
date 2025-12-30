@@ -8,7 +8,7 @@ import { TrendChart } from '../../components/charts/TrendChart';
 import { Button } from '../../components/common/Button';
 import { Row } from '../../components/layout/Row';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography } from '../../theme/theme';
+import { colors, spacing, typograph } from '../../theme/theme';
 import { FarmWeeklyAnalyticsDto } from '../../types/api.types';
 
 interface AnalyticsDashboardScreenProps {
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   sectionTitle: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     marginBottom: spacing.md,
     fontWeight: '600',

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { RegisterRequest, Role } from '../../types/api.types';
 
 interface RegisterScreenProps {
@@ -272,13 +272,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   title: {
-    ...typography.h2,
+    ...typograph.h2,
     color: colors.text,
     fontWeight: '700',
     marginBottom: spacing.xs,
   },
   subtitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
   },
   formSection: {
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   checkboxText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     flex: 1,
     lineHeight: 20,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   errorText: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.error,
     marginBottom: spacing.sm,
   },
@@ -322,12 +322,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   loginLinkText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
   },
   loginLinkButton: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
   },
 });
+export default RegisterScreen;

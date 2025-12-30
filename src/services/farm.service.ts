@@ -1,3 +1,4 @@
+// src/services/farm.service.ts
 import { axiosInstance } from './api.client';
 import {
   FarmResponse,
@@ -56,12 +57,12 @@ class FarmService {
   }
 
   async deleteGreenhouse(greenhouseId: string): Promise<void> {
-    await axiosInstance.delete(`/greenhouses/${greenhouseId}`);
+    await axiosInstance.delete(`/greenhouses/${greenhouseId}`); 
   }
 
   // Field Block endpoints
   async getFieldBlocks(farmId: string): Promise<FieldBlockDto[]> {
-    const response = await axiosInstance.get<FieldBlockDto[]>(`/farms/${farmId}/field-blocks`);
+    const response = await axiosInstance.get<FieldBlockDto[]>(`/farms/${farmId}/field-blocks`); 
     return response.data;
   }
 

@@ -104,7 +104,7 @@ src/
 **Most Critical** (implement these first):
 
 1. **ObservationGridScreen** - Main scout data entry
-2. **HeatmapScreen** - Visual pest pressure map
+2. **HeatMapScreen** - Visual pest pressure map
 3. **SessionDetailScreen** - View session data
 4. **CreateSessionScreen** - Create new sessions
 
@@ -204,13 +204,13 @@ const { sessions, fetchSessions } = useScoutingStore();
 ## Theme Usage
 
 ```typescript
-import { colors, spacing, typography } from '@theme/theme';
+import { colors, spacing, typograph } from '@theme/theme';
 
 <View style={{ 
   backgroundColor: colors.surface,
   padding: spacing.md,
 }}>
-  <Text style={typography.h3}>Title</Text>
+  <Text style={typograph.h3}>Title</Text>
 </View>
 ```
 

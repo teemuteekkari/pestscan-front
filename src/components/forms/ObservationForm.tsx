@@ -10,7 +10,7 @@ import {
   ObservationCategory,
   ScoutingObservationDto 
 } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { Picker } from '@react-native-picker/picker';
 
 interface ObservationFormProps {
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   label: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '500',
     marginBottom: spacing.xs,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   categoryText: {
-    ...typography.caption,
+    ...typograph.caption,
     fontWeight: '600',
     textTransform: 'uppercase',
   },

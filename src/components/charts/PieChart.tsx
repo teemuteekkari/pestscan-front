@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { PieChart as RNPieChart } from 'react-native-chart-kit';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface PieChartData {
   name: string;
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     marginBottom: spacing.md,
     fontWeight: '600',
@@ -96,12 +96,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   totalLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     textTransform: 'uppercase',
   },
   totalValue: {
-    ...typography.h2,
+    ...typograph.h2,
     color: colors.primary,
     fontWeight: '700',
     marginTop: spacing.xs,

@@ -1,21 +1,15 @@
 // src/screens/scouting/CreateSessionScreen.tsx
-
 import React from 'react';
 import { StyleSheet, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screen } from '../../components/layout/Screen';
 import { SessionForm } from '../../components/forms/SessionForm';
 import { CreateScoutingSessionRequest } from '../../types/api.types';
+import { ScoutingStackParamList } from '../../navigation/ScoutingNavigator';
 
-interface CreateSessionScreenProps {
-  navigation: any;
-  route: {
-    params: {
-      farmId: string;
-    };
-  };
-}
+type Props = NativeStackScreenProps<ScoutingStackParamList, 'CreateSession'>;
 
-export const CreateSessionScreen: React.FC<CreateSessionScreenProps> = ({
+export const CreateSessionScreen: React.FC<Props> = ({
   navigation,
   route,
 }) => {
@@ -82,3 +76,5 @@ export const CreateSessionScreen: React.FC<CreateSessionScreenProps> = ({
 };
 
 const styles = StyleSheet.create({});
+
+export default CreateSessionScreen;

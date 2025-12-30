@@ -32,9 +32,6 @@
       },
       "web": {
         "bundler": "metro"
-      },
-      "plugins": [
-        "expo-router"
-      ]
+      }
     }
   }

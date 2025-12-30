@@ -276,7 +276,7 @@ src/
 ├── services/       # API service layer
 ├── store/          # State management (Context + Zustand)
 ├── types/          # TypeScript type definitions
-├── theme/          # Design system (colors, typography)
+├── theme/          # Design system (colors, typograph)
 ├── utils/          # Helper functions
 └── hooks/          # Custom React hooks
 ```
@@ -307,7 +307,7 @@ src/
 
 Edit `src/theme/theme.ts`:
 - Colors
-- Typography
+- typograph
 - Spacing
 - Shadows
 

@@ -7,7 +7,7 @@ import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { CreateFieldBlockRequest, FieldBlockDto } from '../../types/api.types';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface FieldBlockFormProps {
   initialData?: Partial<FieldBlockDto>;

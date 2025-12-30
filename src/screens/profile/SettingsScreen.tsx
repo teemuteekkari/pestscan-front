@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card } from '../../components/common/Card';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -240,7 +240,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
 
 const styles = StyleSheet.create({
   sectionTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -261,11 +261,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingLabel: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   settingDescription: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs / 2,
   },
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionItemText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   infoItem: {
@@ -292,11 +292,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   infoLabel: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
   },
   infoValue: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '500',
   },
@@ -312,8 +312,9 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.error}10`,
   },
   resetButtonText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.error,
     fontWeight: '600',
   },
 });
+export default SettingsScreen;

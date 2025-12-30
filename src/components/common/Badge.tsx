@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 
 type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info' | 'neutral';
 type BadgeSize = 'sm' | 'md' | 'lg';
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs / 2,
   },
   label: {
-    ...typography.caption,
+    ...typograph.caption,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,

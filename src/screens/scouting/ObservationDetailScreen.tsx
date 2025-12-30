@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card, Badge, Button } from '../../components/common';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { ScoutingObservationDto, ObservationCategory } from '../../types/api.types';
 import { getSpeciesLabel, getCategoryColor } from '../../constants/species';
 
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   speciesName: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     fontWeight: '700',
   },
@@ -281,17 +281,17 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   countLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     textTransform: 'uppercase',
     marginBottom: spacing.xs,
   },
   countValue: {
-    ...typography.h1,
+    ...typograph.h1,
     fontWeight: '700',
   },
   sectionTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   locationLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginBottom: spacing.sm,
   },
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   locationIndex: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     fontWeight: '700',
   },
@@ -331,11 +331,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   infoText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   notesText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     lineHeight: 24,
   },

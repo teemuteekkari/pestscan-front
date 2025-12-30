@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card } from '../../components/common/Card';
@@ -10,20 +11,14 @@ import { Badge } from '../../components/common/Badge';
 import { StatCard, StatCardGrid } from '../../components/cards/StatCard';
 import { Row } from '../../components/layout/Row';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { FarmResponse, SubscriptionStatus } from '../../types/api.types';
-import { getStatusColor, getStatusLabel } from '../../utils/helpers';
+import { getStatusLabel } from '../../utils/helpers';
+import { DashboardStackParamList } from '../../navigation/DashboardNavigator';
 
-interface FarmDetailScreenProps {
-  navigation: any;
-  route: {
-    params: {
-      farmId: string;
-    };
-  };
-}
+type Props = NativeStackScreenProps<DashboardStackParamList, 'FarmDetail'>;
 
-export const FarmDetailScreen: React.FC<FarmDetailScreenProps> = ({ navigation, route }) => {
+export const FarmDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { farmId } = route.params;
   const [farm, setFarm] = useState<FarmResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,16 +73,25 @@ export const FarmDetailScreen: React.FC<FarmDetailScreenProps> = ({ navigation, 
     }
   };
 
+  // ✅ Fixed: Placeholder for Edit (screen doesn't exist yet)
   const handleEdit = () => {
-    navigation.navigate('EditFarm', { farmId });
+    Alert.alert('Coming Soon', 'Edit farm feature will be available soon');
+    // TODO: Uncomment when EditFarm screen is created
+    // navigation.navigate('EditFarm', { farmId });
   };
 
+  // ✅ Fixed: Placeholder for Greenhouses (screen doesn't exist yet)
   const handleViewGreenhouses = () => {
-    navigation.navigate('GreenhouseList', { farmId });
+    Alert.alert('Coming Soon', 'Greenhouse list will be available soon');
+    // TODO: Uncomment when GreenhouseList screen is created
+    // navigation.navigate('GreenhouseList', { farmId });
   };
 
+  // ✅ Fixed: Placeholder for Field Blocks (screen doesn't exist yet)
   const handleViewFieldBlocks = () => {
-    navigation.navigate('FieldBlockList', { farmId });
+    Alert.alert('Coming Soon', 'Field block list will be available soon');
+    // TODO: Uncomment when FieldBlockList screen is created
+    // navigation.navigate('FieldBlockList', { farmId });
   };
 
   const handleDelete = () => {
@@ -295,19 +299,19 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   sectionTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
   },
   label: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     textTransform: 'uppercase',
     marginBottom: spacing.xs,
   },
   value: {
-    ...typography.h4,
+    ...typograph.h4,
     color: colors.text,
     fontWeight: '600',
   },
@@ -321,7 +325,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     flex: 1,
   },
@@ -336,17 +340,17 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   configValue: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.primary,
     fontWeight: '700',
   },
   configLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
   descriptionText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     lineHeight: 24,
   },
@@ -358,3 +362,5 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
 });
+
+export default FarmDetailScreen;

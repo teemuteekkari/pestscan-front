@@ -125,7 +125,7 @@ mofo-pest-scout-frontend/
 │   ├── types/               # TypeScript type definitions
 │   │   └── api.types.ts     # API DTOs matching backend
 │   ├── theme/               # Theme configuration
-│   │   └── theme.ts         # Colors, typography, spacing
+│   │   └── theme.ts         # Colors, typograph, spacing
 │   ├── utils/               # Utility functions
 │   │   ├── helpers.ts       # General helpers
 │   │   └── toastConfig.tsx  # Toast notifications

@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Input, Button, Avatar, Card } from '../../components/common';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { UserDto } from '../../types/api.types';
 
 interface EditProfileScreenProps {
@@ -241,12 +241,12 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.primary}15`,
   },
   changePhotoText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.primary,
     fontWeight: '600',
   },
   sectionTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   securityItemText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   saveButton: {

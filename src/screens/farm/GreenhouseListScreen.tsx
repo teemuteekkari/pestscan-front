@@ -7,7 +7,7 @@ import { Screen } from '../../components/layout/Screen';
 import { GreenhouseCard } from '../../components/cards/GreenhouseCard';
 import { FloatingActionButton } from '../../components/navigation/FloatingActionButton';
 import { Input } from '../../components/common/Input';
-import { colors, spacing, typography } from '../../theme/theme';
+import { colors, spacing, typograph } from '../../theme/theme';
 import { GreenhouseDto } from '../../types/api.types';
 
 interface GreenhouseListScreenProps {
@@ -212,13 +212,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl * 2,
   },
   emptyTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   emptyText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
   },

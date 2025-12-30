@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AnalyticsDashboardScreen from '../screens/analytics/AnalyticsDashboardScreen';
-import HeatmapScreen from '../screens/analytics/HeatmapScreen';
+import HeatMapScreen from '../screens/analytics/HeatMapScreen';
 import ReportsScreen from '../screens/analytics/ReportScreen';
 
 export type AnalyticsStackParamList = {
@@ -22,7 +22,7 @@ const AnalyticsNavigator: React.FC = () => {
       />
       <Stack.Screen
         name="Heatmap"
-        component={HeatmapScreen}
+        component={HeatMapScreen}
         options={{ title: 'Heat Map' }}
       />
       <Stack.Screen

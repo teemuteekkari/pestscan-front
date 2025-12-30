@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Screen } from '../../components/layout/Screen';
-import { Card } from '../../components/Card';
-import { Input } from '../../components/Input';
-import { Button } from '../../components/Button';
-import { Badge } from '../../components/Badge';
+import { Card } from '../../components/common/Card';
+import { Input } from '../../components/common/Input';
+import { Button } from '../../components/common/Button';
+import { Badge } from '../../components/common/Badge';
 import { Row } from '../../components/layout/Row';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ReportScreenProps {
@@ -227,7 +227,7 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   cardTitle: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   typeButtonText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
   },
   formatButton: {
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   formatButtonText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   infoText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     flex: 1,
   },

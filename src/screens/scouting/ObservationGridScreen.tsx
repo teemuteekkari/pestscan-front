@@ -1,29 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card, Badge } from '../../components/common';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { ScoutingObservationDto } from '../../types/api.types';
 import { getSpeciesLabel, getCategoryColor } from '../../constants/species';
+import { ScoutingStackParamList } from '../../navigation/ScoutingNavigator';
 
-interface ObservationGridScreenProps {
-  navigation: any;
-  route: {
-    params: {
-      sessionId: string;
-    };
-  };
-}
+type Props = NativeStackScreenProps<ScoutingStackParamList, 'ObservationGrid'>;
 
 type ViewMode = 'list' | 'grid';
 type GroupBy = 'location' | 'species' | 'category';
 
-export const ObservationGridScreen: React.FC<ObservationGridScreenProps> = ({
+export const ObservationGridScreen: React.FC<Props> = ({
   navigation,
   route,
 }) => {
-  const { sessionId } = route.params;
+  const { sessionId, targetId } = route.params;
   const [observations, setObservations] = useState<ScoutingObservationDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -37,7 +32,7 @@ export const ObservationGridScreen: React.FC<ObservationGridScreenProps> = ({
     try {
       setLoading(true);
       // TODO: Implement API call
-      // const data = await scoutingService.getSessionObservations(sessionId);
+      // const data = await scoutingService.getSessionObservations(sessionId, targetId);
       // setObservations(data);
 
       // Mock data
@@ -46,7 +41,7 @@ export const ObservationGridScreen: React.FC<ObservationGridScreenProps> = ({
           {
             id: '1',
             sessionId,
-            sessionTargetId: 'target-1',
+            sessionTargetId: targetId,
             greenhouseId: 'greenhouse-1',
             speciesCode: 'THRIPS' as any,
             category: 'PEST' as any,
@@ -60,7 +55,7 @@ export const ObservationGridScreen: React.FC<ObservationGridScreenProps> = ({
           {
             id: '2',
             sessionId,
-            sessionTargetId: 'target-1',
+            sessionTargetId: targetId,
             greenhouseId: 'greenhouse-1',
             speciesCode: 'RED_SPIDER_MITE' as any,
             category: 'PEST' as any,
@@ -72,7 +67,7 @@ export const ObservationGridScreen: React.FC<ObservationGridScreenProps> = ({
           {
             id: '3',
             sessionId,
-            sessionTargetId: 'target-1',
+            sessionTargetId: targetId,
             greenhouseId: 'greenhouse-1',
             speciesCode: 'POWDERY_MILDEW' as any,
             category: 'DISEASE' as any,
@@ -92,7 +87,10 @@ export const ObservationGridScreen: React.FC<ObservationGridScreenProps> = ({
   };
 
   const handleObservationPress = (observation: ScoutingObservationDto) => {
-    navigation.navigate('ObservationDetail', { observationId: observation.id });
+    // ✅ Fixed: Added placeholder for ObservationDetail
+    Alert.alert('Coming Soon', 'Observation detail view will be available soon');
+    // TODO: Uncomment when ObservationDetail screen is created
+    // navigation.navigate('ObservationDetail', { observationId: observation.id });
   };
 
   const groupObservations = () => {
@@ -276,12 +274,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   summaryValue: {
-    ...typography.h2,
+    ...typograph.h2,
     color: colors.primary,
     fontWeight: '700',
   },
   summaryLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
@@ -294,7 +292,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   filterLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginBottom: spacing.sm,
     textTransform: 'uppercase',
@@ -316,7 +314,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   filterText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
     fontWeight: '500',
   },
@@ -342,7 +340,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
   },
   groupTitle: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
   },
@@ -365,12 +363,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   observationSpecies: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     fontWeight: '600',
   },
   observationLocation: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs / 2,
   },
@@ -383,7 +381,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   countBadgeText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.surface,
     fontWeight: '700',
   },
@@ -395,15 +393,16 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl * 2,
   },
   emptyTitle: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   emptyText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
   },
 });
-export default ObservationGridScreen
+
+export default ObservationGridScreen;

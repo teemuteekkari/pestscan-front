@@ -11,7 +11,7 @@ import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { Row } from '../../components/layout/Row';
 import { Divider } from '../../components/layout/Divider';
-import { colors, spacing, typography, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { 
   HeatmapResponse, 
   HeatmapCellResponse, 
@@ -436,7 +436,7 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   cardTitle: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   modeButtonText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -487,18 +487,18 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   statValue: {
-    ...typography.h3,
+    ...typograph.h3,
     color: colors.text,
     fontWeight: '700',
     marginTop: spacing.xs,
   },
   statLabel: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
   loadingText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.textSecondary,
     textAlign: 'center',
     padding: spacing.xl,
@@ -515,13 +515,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   alertTitle: {
-    ...typography.subtitle,
+    ...typograph.subtitle,
     color: colors.error,
     fontWeight: '600',
     flex: 1,
   },
   alertText: {
-    ...typography.body,
+    ...typograph.body,
     color: colors.text,
     marginBottom: spacing.md,
   },
@@ -535,11 +535,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   infoText: {
-    ...typography.bodySmall,
+    ...typograph.bodySmall,
     color: colors.text,
   },
   infoNote: {
-    ...typography.caption,
+    ...typograph.caption,
     color: colors.textSecondary,
     fontStyle: 'italic',
     marginTop: spacing.sm,
