@@ -1,7 +1,7 @@
 // src/screens/analytics/ReportScreen.tsx
-
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screen } from '../../components/layout/Screen';
 import { Card } from '../../components/common/Card';
 import { Input } from '../../components/common/Input';
@@ -11,18 +11,21 @@ import { Row } from '../../components/layout/Row';
 import { Divider } from '../../components/layout/Divider';
 import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { analyticsService } from '../../services/analytics.service';
+import { AnalyticsStackParamList } from '../../navigation/AnalyticsNavigator';
+import { ReportExportRequest } from '../../types/api.types'
 
-interface ReportScreenProps {
-  navigation: any;
-  route: any;
-}
+type Props = NativeStackScreenProps<AnalyticsStackParamList, 'Report'>;
 
 type ReportType = 'weekly' | 'monthly' | 'quarterly' | 'custom';
 type ExportFormat = 'pdf' | 'excel' | 'csv';
 
-export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
-  const [reportType, setReportType] = useState<ReportType>('weekly');
+export const ReportScreen: React.FC<Props> = ({ navigation, route }) => {
+  const farmId = route.params?.farmId;
+  const [reportType, setReportType] = useState<ReportType>('monthly');
   const [exportFormat, setExportFormat] = useState<ExportFormat>('pdf');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +34,7 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
     summary: true,
     observations: true,
     charts: true,
-    heatmaps: false,
+    heatmaps: true,
     recommendations: true,
     photos: false,
   });
@@ -53,14 +56,111 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
     setSelectedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const handleGenerateReport = () => {
+  const handleGenerateReport = async () => {
+  if (!farmId) {
+    Alert.alert('Error', 'No farm selected');
+    return;
+  }
+
+  // Validate inputs based on report type
+  if (reportType === 'monthly') {
+    const year = parseInt(selectedYear, 10);
+    const month = parseInt(selectedMonth, 10);
+
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      Alert.alert('Invalid Year', 'Please enter a valid year');
+      return;
+    }
+
+    if (isNaN(month) || month < 1 || month > 12) {
+      Alert.alert('Invalid Month', 'Please enter a month between 1 and 12');
+      return;
+    }
+
+    // ✅ Just navigate with parameters, let MonthlyReportScreen fetch the data
+    navigation.navigate('MonthlyReport', { 
+      farmId, 
+      year, 
+      month,
+    });
+      
+  } else if (reportType === 'custom') {
+    // ✅ Use the export endpoint for custom date ranges
+    await handleExportReport();
+  } else {
+    // Weekly and Quarterly not implemented yet
+    Alert.alert(
+      'Coming Soon',
+      `${reportType.charAt(0).toUpperCase() + reportType.slice(1)} reports will be available soon`
+    );
+  }
+};
+
+  const handleExportReport = async () => {
+  if (!farmId) {
+    Alert.alert('Error', 'No farm selected');
+    return;
+  }
+
+  if (!startDate || !endDate) {
+    Alert.alert('Error', 'Please select start and end dates');
+    return;
+  }
+
+  try {
     setLoading(true);
-    // TODO: Implement report generation
-    setTimeout(() => {
-      setLoading(false);
-      // Navigate to generated report or show success
-    }, 2000);
+
+    const exportRequest: ReportExportRequest = {
+      farmId,
+      startDate,
+      endDate,
+      format: exportFormat.toUpperCase() as 'PDF' | 'EXCEL' | 'CSV',
+      sections: selectedSections,
+    };
+
+    const response = await analyticsService.exportReport(exportRequest);
+
+    // Open download URL or show success
+    Alert.alert(
+      'Export Ready',
+      `Your ${exportFormat.toUpperCase()} report is ready for download.\n\nFile: ${response.fileName}\nSize: ${(response.fileSize / 1024).toFixed(2)} KB`,
+      [
+        {
+          text: 'Download',
+          onPress: () => {
+            // Open URL in browser or download
+            // Linking.openURL(response.downloadUrl);
+            console.log('Download URL:', response.downloadUrl);
+          },
+        },
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
+  } catch (error) {
+    console.error('Export failed:', error);
+    Alert.alert('Error', 'Failed to export report');
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const getMonthName = (month: number): string => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1] || '';
   };
+
+  if (!farmId) {
+    return (
+      <Screen title="Reports">
+        <View style={styles.emptyContainer}>
+          <Text>No farm selected</Text>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen
@@ -98,10 +198,41 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
               >
                 {type.label}
               </Text>
+              {type.value !== 'monthly' && (
+                <Badge label="Soon" variant="info" size="sm" />
+              )}
             </TouchableOpacity>
           ))}
         </View>
       </Card>
+
+      {/* Monthly Report Parameters */}
+      {reportType === 'monthly' && (
+        <Card padding="md">
+          <Text style={styles.cardTitle}>Report Period</Text>
+          <Row gap="md">
+            <Input
+              label="Year"
+              value={selectedYear}
+              onChangeText={setSelectedYear}
+              keyboardType="number-pad"
+              placeholder="2024"
+              containerStyle={styles.input}
+            />
+            <Input
+              label="Month"
+              value={selectedMonth}
+              onChangeText={setSelectedMonth}
+              keyboardType="number-pad"
+              placeholder="1-12"
+              containerStyle={styles.input}
+            />
+          </Row>
+          <Text style={styles.periodPreview}>
+            {getMonthName(parseInt(selectedMonth, 10))} {selectedYear}
+          </Text>
+        </Card>
+      )}
 
       {/* Date Range (for custom reports) */}
       {reportType === 'custom' && (
@@ -145,9 +276,6 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </Text>
             </View>
-            {key === 'heatmaps' && (
-              <Badge label="Premium" variant="warning" size="sm" />
-            )}
             {key === 'photos' && (
               <Badge label="Large File" variant="info" size="sm" />
             )}
@@ -185,6 +313,11 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
             </TouchableOpacity>
           ))}
         </Row>
+        {exportFormat !== 'pdf' && (
+          <Text style={styles.formatNote}>
+            Note: {exportFormat.toUpperCase()} export via API endpoint (coming soon)
+          </Text>
+        )}
       </Card>
 
       {/* Preview Info */}
@@ -192,7 +325,13 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
         <View style={styles.infoRow}>
           <Ionicons name="information-circle" size={20} color={colors.info} />
           <Text style={styles.infoText}>
-            Report will include data from {reportType === 'custom' ? 'selected date range' : `last ${reportType} period`}
+            Report will include data from {
+              reportType === 'monthly' 
+                ? `${getMonthName(parseInt(selectedMonth, 10))} ${selectedYear}`
+                : reportType === 'custom' 
+                  ? 'selected date range' 
+                  : `last ${reportType} period`
+            }
           </Text>
         </View>
         <Divider marginVertical="sm" />
@@ -213,11 +352,14 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
 
       {/* Generate Button */}
       <Button
-        title={`Generate ${exportFormat.toUpperCase()} Report`}
-        icon="download"
+        title={`Generate Report`}
+        icon="document-text"
         onPress={handleGenerateReport}
         loading={loading}
-        disabled={reportType === 'custom' && (!startDate || !endDate)}
+        disabled={
+          (reportType === 'custom' && (!startDate || !endDate)) ||
+          (reportType === 'monthly' && (!selectedYear || !selectedMonth))
+        }
         size="lg"
         style={styles.generateButton}
       />
@@ -226,11 +368,27 @@ export const ReportScreen: React.FC<ReportScreenProps> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
   cardTitle: {
     ...typograph.subtitle,
     color: colors.text,
     fontWeight: '600',
     marginBottom: spacing.md,
+  },
+  input: {
+    flex: 1,
+  },
+  periodPreview: {
+    ...typograph.body,
+    color: colors.primary,
+    marginTop: spacing.sm,
+    textAlign: 'center',
+    fontWeight: '600',
   },
   typeGrid: {
     flexDirection: 'row',
@@ -300,6 +458,12 @@ const styles = StyleSheet.create({
     color: colors.surface,
     fontWeight: '600',
   },
+  formatNote: {
+    ...typograph.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.sm,
+    fontStyle: 'italic',
+  },
   infoCard: {
     backgroundColor: `${colors.info}10`,
   },
@@ -318,4 +482,5 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
 });
-export default ReportScreen
+
+export default ReportScreen;

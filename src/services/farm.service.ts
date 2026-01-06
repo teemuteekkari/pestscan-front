@@ -3,6 +3,7 @@ import { axiosInstance } from './api.client';
 import {
   FarmResponse,
   CreateFarmRequest,
+  UpdateFarmRequest,
   GreenhouseDto,
   CreateGreenhouseRequest,
   FieldBlockDto,
@@ -17,7 +18,7 @@ class FarmService {
   }
 
   async getFarm(farmId: string): Promise<FarmResponse> {
-    const response = await axiosInstance.get<FarmResponse>(`/farms/${farmId}`);
+    const response = await axiosInstance.get<FarmResponse>(`/farms/${farmId}`); // ✅ Fixed
     return response.data;
   }
 
@@ -26,14 +27,14 @@ class FarmService {
     return response.data;
   }
 
-  async updateFarm(farmId: string, data: Partial<CreateFarmRequest>): Promise<FarmResponse> {
-    const response = await axiosInstance.put<FarmResponse>(`/farms/${farmId}`, data);
+  async updateFarm(farmId: string, data: UpdateFarmRequest): Promise<FarmResponse> {
+    const response = await axiosInstance.put<FarmResponse>(`/farms/${farmId}`, data); // ✅ Fixed
     return response.data;
   }
 
   // Greenhouse endpoints
   async getGreenhouses(farmId: string): Promise<GreenhouseDto[]> {
-    const response = await axiosInstance.get<GreenhouseDto[]>(`/farms/${farmId}/greenhouses`);
+    const response = await axiosInstance.get<GreenhouseDto[]>(`/farms/${farmId}/greenhouses`); // ✅ Fixed
     return response.data;
   }
 
@@ -57,12 +58,12 @@ class FarmService {
   }
 
   async deleteGreenhouse(greenhouseId: string): Promise<void> {
-    await axiosInstance.delete(`/greenhouses/${greenhouseId}`); 
+    await axiosInstance.delete(`/greenhouses/${greenhouseId}`); // ✅ Fixed
   }
 
   // Field Block endpoints
   async getFieldBlocks(farmId: string): Promise<FieldBlockDto[]> {
-    const response = await axiosInstance.get<FieldBlockDto[]>(`/farms/${farmId}/field-blocks`); 
+    const response = await axiosInstance.get<FieldBlockDto[]>(`/farms/${farmId}/field-blocks`); // ✅ Fixed
     return response.data;
   }
 
@@ -86,7 +87,7 @@ class FarmService {
   }
 
   async deleteFieldBlock(fieldBlockId: string): Promise<void> {
-    await axiosInstance.delete(`/field-blocks/${fieldBlockId}`);
+    await axiosInstance.delete(`/field-blocks/${fieldBlockId}`); // ✅ Fixed
   }
 }
 

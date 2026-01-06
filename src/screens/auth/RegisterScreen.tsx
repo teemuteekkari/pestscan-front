@@ -1,19 +1,19 @@
 // src/screens/auth/RegisterScreen.tsx
-
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
-import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
-import { RegisterRequest, Role } from '../../types/api.types';
+import { colors, spacing, typograph } from '../../theme/theme';
+import { Role } from '../../types/api.types';
+import { authService } from '../../services/auth.service';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
 
-interface RegisterScreenProps {
-  navigation: any;
-}
+type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 
-export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
+export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -84,27 +84,44 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
 
     try {
       setLoading(true);
-      // TODO: Implement API call
-      // const registerData: RegisterRequest = {
-      //   email: formData.email.toLowerCase(),
-      //   password: formData.password,
-      //   firstName: formData.firstName.trim(),
-      //   lastName: formData.lastName.trim(),
-      //   phoneNumber: formData.phoneNumber.trim(),
-      //   role: Role.SCOUT, // Default role
-      // };
-      // await authService.register(registerData);
-      // navigation.navigate('Login');
+      
+      // Call register API
+      await authService.register({
+        email: formData.email.toLowerCase().trim(),
+        password: formData.password,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        role: Role.SCOUT, // Default role for new registrations
+      });
 
-      // Mock registration
-      setTimeout(() => {
-        setLoading(false);
-        console.log('Registration successful');
-        navigation.navigate('Login');
-      }, 1500);
-    } catch (error) {
-      setLoading(false);
+      // Show success message
+      Alert.alert(
+        'Registration Successful',
+        'Your account has been created. Please log in.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Login'),
+          },
+        ]
+      );
+    } catch (error: any) {
       console.error('Registration failed:', error);
+      
+      // Handle specific error messages from backend
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.errorCode ||
+                          'Registration failed. Please try again.';
+      
+      // Check for specific errors
+      if (errorMessage.toLowerCase().includes('email')) {
+        setErrors({ email: 'Email already registered' });
+      } else {
+        Alert.alert('Registration Failed', errorMessage);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,7 +147,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
             <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Join PestScan today</Text>
+          <Text style={styles.subtitle}>Join PestScout today</Text>
         </View>
 
         {/* Form */}
@@ -331,4 +348,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
 export default RegisterScreen;

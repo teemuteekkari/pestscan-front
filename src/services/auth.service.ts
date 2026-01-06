@@ -8,8 +8,14 @@ import {
 
 class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await axiosInstance.post<LoginResponse>('/auth/login', credentials);
-    
+      const response = await axiosInstance.post<LoginResponse>('/auth/login', {
+        email: credentials.email,
+        password: credentials.password, // ✅ Make sure this is being sent
+      });
+      console.log('Login response received:', { 
+      hasToken: !!response.data.token,
+      hasRefreshToken: !!response.data.refreshToken 
+    });
     const { token, refreshToken, user } = response.data;
     await apiClient.setTokens(token, refreshToken);
     

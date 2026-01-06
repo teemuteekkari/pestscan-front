@@ -179,6 +179,39 @@ export enum Role {
     licenseExpiryDate?: string;
     autoRenewEnabled?: boolean;
   }
+
+  export interface UpdateFarmRequest {
+        name: string;
+    description?: string;
+    externalId?: string;
+    address?: string;
+    city?: string;
+    province?: string;
+    postalCode?: string;
+    country?: string;
+    contactName?: string;
+    contactEmail?: string;
+    contactPhone?: string;
+    subscriptionStatus: SubscriptionStatus;
+    subscriptionTier: SubscriptionTier;
+    billingEmail?: string;
+    licensedAreaHectares: number;
+    licensedUnitQuota?: number;
+    quotaDiscountPercentage?: number;
+    defaultBayCount?: number;
+    defaultBenchesPerBay?: number;
+    defaultSpotChecksPerBench?: number;
+    greenhouses?: CreateGreenhouseRequest[];
+    fieldBlocks?: CreateFieldBlockRequest[];
+    timezone?: string;
+    licenseExpiryDate?: string;
+    autoRenewEnabled?: boolean;
+    isArchived?: boolean;
+    licenseGracePeriodEnd?: string;
+    licenseArchivedDate?: string;
+    latitude?: number;
+    longitude?: number;  
+}
   
   // Greenhouse Types
   export interface GreenhouseDto {
@@ -201,6 +234,17 @@ export enum Role {
     bayCount: number;
     benchesPerBay: number;
     spotChecksPerBench: number;
+    bayTags?: string[];
+    benchTags?: string[];
+  }
+
+  export interface UpdateGreenhouseRequest {
+    name?: string;
+    bayCount?: number;
+    benchesPerBay?: number;
+    spotChecksPerBench?: number;
+    active?: boolean;
+    description?: string;
     bayTags?: string[];
     benchTags?: string[];
   }
@@ -366,6 +410,7 @@ export enum Role {
     colorHex: string;
   }
   
+  
   // Analytics Types
   export interface FarmWeeklyAnalyticsDto {
     farmId: string;
@@ -383,6 +428,135 @@ export enum Role {
     severityBuckets: Record<string, number>;
   }
   
+
+
+// Dashboard Analytics Types
+export interface DashboardDto {
+  summary: DashboardSummaryDto;
+  pestDistribution: PestDistributionItemDto[];
+  diseaseDistribution: DiseaseDistributionItemDto[];
+  weeklyTrends: WeeklyPestTrendDto[];
+  severityTrend: SeverityTrendPointDto[];
+  heatmap: HeatmapCellResponse[];
+  alerts: AlertDto[];
+  recommendations: RecommendationDto[];
+  farmComparison: FarmComparisonDto[];
+  scoutPerformance: ScoutPerformanceDto[];
+}
+
+export interface DashboardSummaryDto {
+  farmId: string;
+  totalSessions: number;
+  activeScouts: number;
+  averageSeverityThisWeek: number;
+  averageSeverityLastWeek: number;
+  pestsDetectedThisWeek: number;
+  treatmentsApplied: number;
+  currentWeekHeatmap: WeeklyHeatmapResponse[];
+  severityTrend: TrendPointDto[];
+}
+
+export interface FarmMonthlyReportDto {
+  farmId: string;
+  year: number;
+  month: number;
+  weeklyHeatmaps: WeeklyHeatmapResponse[];
+  severityTrend: TrendPointDto[];
+  topPestTrends: PestTrendResponse[];
+  totalSessions: number;
+  totalObservations: number;
+  activeScouts: number;
+  averageSeverity: number;
+  worstSeverity: number;
+  distinctPestsDetected: number;
+  periodStart: string; // ISO date
+  periodEnd: string; // ISO date
+  legend: SeverityLegendEntry;
+}
+
+export interface PestTrendResponse {
+  farmId: string;
+  speciesCode: string;
+  points: TrendPointDto[];
+}
+
+export interface WeeklyHeatmapResponse {
+  weekNumber: number;
+  rangeStart: string;
+  rangeEnd: string;
+  sections: HeatmapSectionResponse[];
+}
+
+export interface TrendPointDto {
+  date: string;
+  severity: number;
+}
+
+export interface PestDistributionItemDto {
+  name: string;
+  value: number;
+  percentage: number;
+  severity: string;
+}
+
+export interface DiseaseDistributionItemDto {
+  name: string;
+  value: number;
+  percentage: number;
+  severity: string;
+}
+
+export interface WeeklyPestTrendDto {
+  week: string;
+  thrips: number;
+  redSpider: number;
+  whiteflies: number;
+  mealybugs: number;
+  caterpillars: number;
+  fcm: number;
+  otherPests: number;
+}
+
+export interface SeverityTrendPointDto {
+  week: string;
+  zero: number;
+  low: number;
+  medium: number;
+  high: number;
+  critical: number;
+}
+
+export interface AlertDto {
+  location: string;
+  pest: string;
+  severity: string;
+  count: number;
+  time: string;
+}
+
+export interface RecommendationDto {
+  scout: string;
+  location: string;
+  text: string;
+  priority: string;
+  status: string;
+  date: string;
+}
+
+export interface FarmComparisonDto {
+  farm: string;
+  avgSeverity: number;
+  observations: number;
+  alerts: number;
+}
+
+export interface ScoutPerformanceDto {
+  scout: string;
+  observations: number;
+  accuracy: number;
+  avgTime: string;
+}
+  
   // Error Response
   export interface ErrorResponse {
     timestamp: string;
@@ -392,3 +566,25 @@ export enum Role {
     path: string;
     details?: string[];
   }
+
+  export interface ReportExportRequest {
+  farmId: string;
+  startDate: string; // ISO date
+  endDate: string; // ISO date
+  format: 'PDF' | 'EXCEL' | 'CSV';
+  sections: {
+    summary: boolean;
+    observations: boolean;
+    charts: boolean;
+    heatmaps: boolean;
+    recommendations: boolean;
+    photos: boolean;
+  };
+}
+
+export interface ReportExportResponse {
+  downloadUrl: string;
+  fileName: string;
+  fileSize: number;
+  expiresAt: string; // ISO datetime
+}

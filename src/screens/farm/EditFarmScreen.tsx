@@ -1,22 +1,17 @@
 // src/screens/farm/EditFarmScreen.tsx
-
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Alert, ActivityIndicator, View } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screen } from '../../components/layout/Screen';
 import { FarmForm } from '../../components/forms/FarmForm';
-import { CreateFarmRequest, FarmResponse } from '../../types/api.types';
+import { UpdateFarmRequest, FarmResponse } from '../../types/api.types';
+import { farmService } from '../../services/farm.service';
+import { DashboardStackParamList } from '../../navigation/DashboardNavigator';
 import { colors, spacing } from '../../theme/theme';
 
-interface EditFarmScreenProps {
-  navigation: any;
-  route: {
-    params: {
-      farmId: string;
-    };
-  };
-}
+type Props = NativeStackScreenProps<DashboardStackParamList, 'EditFarm'>;
 
-export const EditFarmScreen: React.FC<EditFarmScreenProps> = ({ navigation, route }) => {
+export const EditFarmScreen: React.FC<Props> = ({ navigation, route }) => {
   const { farmId } = route.params;
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -29,59 +24,52 @@ export const EditFarmScreen: React.FC<EditFarmScreenProps> = ({ navigation, rout
   const loadFarmData = async () => {
     try {
       setInitialLoading(true);
-      // TODO: Implement API call
-      // const data = await farmService.getFarm(farmId);
-      // setFarmData(data);
-      
-      // Mock data
-      setTimeout(() => {
-        setFarmData({
-          id: farmId,
-          name: 'Green Valley Farm',
-          description: 'Premium organic greenhouse operation',
-          city: 'Portland',
-          province: 'Oregon',
-          country: 'USA',
-          licensedAreaHectares: 5.5,
-          structureType: 'GREENHOUSE' as any,
-          subscriptionStatus: 'ACTIVE' as any,
-          subscriptionTier: 'PREMIUM' as any,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          ownerId: 'user-1',
-        } as FarmResponse);
-        setInitialLoading(false);
-      }, 1000);
+      const data = await farmService.getFarm(farmId);
+      setFarmData(data);
     } catch (error) {
+      console.error('Failed to load farm data:', error);
+      Alert.alert('Error', 'Failed to load farm data', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } finally {
       setInitialLoading(false);
-      Alert.alert('Error', 'Failed to load farm data');
-      navigation.goBack();
     }
   };
 
-  const handleSubmit = async (data: CreateFarmRequest) => {
+  const handleSubmit = async (data: UpdateFarmRequest) => {
     try {
       setLoading(true);
-      // TODO: Implement API call
-      // await farmService.updateFarm(farmId, data);
       
-      setTimeout(() => {
-        setLoading(false);
-        Alert.alert(
-          'Success',
-          'Farm updated successfully!',
-          [
-            {
-              text: 'OK',
-              onPress: () => navigation.goBack(),
+      // Call the API to update farm
+      const response = await farmService.updateFarm(farmId, data);
+      
+      Alert.alert(
+        'Success',
+        'Farm updated successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Navigate back to farm detail with updated data
+              navigation.navigate('FarmDetail', { farmId: response.id });
             },
-          ]
-        );
-      }, 1500);
-    } catch (error) {
-      setLoading(false);
-      Alert.alert('Error', 'Failed to update farm. Please try again.');
+          },
+        ]
+      );
+    } catch (error: any) {
       console.error('Failed to update farm:', error);
+      
+      // Handle specific error messages from backend
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.errorCode ||
+                          'Failed to update farm. Please try again.';
+      
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,6 +98,16 @@ export const EditFarmScreen: React.FC<EditFarmScreenProps> = ({ navigation, rout
     );
   }
 
+  if (!farmData) {
+    return (
+      <Screen title="Edit Farm" showBack onBackPress={() => navigation.goBack()}>
+        <View style={styles.loadingContainer}>
+          <Text>Farm not found</Text>
+        </View>
+      </Screen>
+    );
+  }
+
   return (
     <Screen
       title="Edit Farm"
@@ -118,14 +116,12 @@ export const EditFarmScreen: React.FC<EditFarmScreenProps> = ({ navigation, rout
       scroll
       padding="md"
     >
-      {farmData && (
-        <FarmForm
-          initialData={farmData}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          loading={loading}
-        />
-      )}
+      <FarmForm
+        initialData={farmData}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        loading={loading}
+      />
     </Screen>
   );
 };
@@ -138,3 +134,5 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
 });
+
+export default EditFarmScreen;

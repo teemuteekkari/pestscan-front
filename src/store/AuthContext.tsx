@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserDto, Role } from '../types/api.types';
 import { authService } from '../services/auth.service';
+import { LoginRequest } from '../types/api.types'
 
 interface AuthContextType {
   user: UserDto | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (credentials: LoginRequest) => Promise<void>; // ✅ Changed signature
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   hasRole: (role: Role | Role[]) => boolean;
@@ -38,9 +39,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const login = async (email: string, password: string) => {
+    const login = async (credentials: LoginRequest) => {
     try {
-      const response = await authService.login({ email, password });
+      const response = await authService.login(credentials);
       setUser(response.user);
     } catch (error) {
       throw error;

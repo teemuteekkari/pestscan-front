@@ -1,7 +1,6 @@
 // src/screens/farm/FarmDetailScreen.tsx
-
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
@@ -10,10 +9,10 @@ import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { StatCard, StatCardGrid } from '../../components/cards/StatCard';
 import { Row } from '../../components/layout/Row';
-import { Divider } from '../../components/layout/Divider';
 import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
 import { FarmResponse, SubscriptionStatus } from '../../types/api.types';
 import { getStatusLabel } from '../../utils/helpers';
+import { farmService } from '../../services/farm.service';
 import { DashboardStackParamList } from '../../navigation/DashboardNavigator';
 
 type Props = NativeStackScreenProps<DashboardStackParamList, 'FarmDetail'>;
@@ -22,76 +21,64 @@ export const FarmDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { farmId } = route.params;
   const [farm, setFarm] = useState<FarmResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadFarmData();
   }, [farmId]);
 
-  const loadFarmData = async () => {
+  const loadFarmData = async (isRefresh = false) => {
     try {
-      setLoading(true);
-      // TODO: Implement API call
-      // const data = await farmService.getFarm(farmId);
-      // setFarm(data);
-      
-      // Mock data
-      setTimeout(() => {
-        setFarm({
-          id: farmId,
-          farmTag: 'GVF-001',
-          name: 'Green Valley Farm',
-          description: 'Premium organic greenhouse operation specializing in tomatoes and peppers',
-          address: '123 Farm Road',
-          city: 'Portland',
-          province: 'Oregon',
-          postalCode: '97201',
-          country: 'USA',
-          contactName: 'John Smith',
-          contactEmail: 'john@greenvalley.com',
-          contactPhone: '+1 503 555 0100',
-          subscriptionStatus: SubscriptionStatus.ACTIVE,
-          subscriptionTier: 'PREMIUM' as any,
-          billingEmail: 'billing@greenvalley.com',
-          licensedAreaHectares: 5.5,
-          licensedUnitQuota: 100,
-          quotaDiscountPercentage: 10,
-          structureType: 'GREENHOUSE' as any,
-          defaultBayCount: 10,
-          defaultBenchesPerBay: 4,
-          defaultSpotChecksPerBench: 5,
-          createdAt: '2024-01-15T10:00:00Z',
-          updatedAt: '2024-11-20T14:30:00Z',
-          timezone: 'America/Los_Angeles',
-          ownerId: 'user-1',
-          scoutId: 'user-2',
-        } as FarmResponse);
-        setLoading(false);
-      }, 1000);
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const data = await farmService.getFarm(farmId);
+      setFarm(data);
     } catch (error) {
-      setLoading(false);
+      console.error('Failed to load farm data:', error);
       Alert.alert('Error', 'Failed to load farm data');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  // ✅ Fixed: Placeholder for Edit (screen doesn't exist yet)
+  const handleRefresh = () => {
+    loadFarmData(true);
+  };
+
   const handleEdit = () => {
-    Alert.alert('Coming Soon', 'Edit farm feature will be available soon');
-    // TODO: Uncomment when EditFarm screen is created
-    // navigation.navigate('EditFarm', { farmId });
+    navigation.navigate('EditFarm', { farmId });
   };
 
-  // ✅ Fixed: Placeholder for Greenhouses (screen doesn't exist yet)
   const handleViewGreenhouses = () => {
-    Alert.alert('Coming Soon', 'Greenhouse list will be available soon');
-    // TODO: Uncomment when GreenhouseList screen is created
-    // navigation.navigate('GreenhouseList', { farmId });
+    navigation.navigate('GreenhouseList', { farmId });
   };
 
-  // ✅ Fixed: Placeholder for Field Blocks (screen doesn't exist yet)
   const handleViewFieldBlocks = () => {
-    Alert.alert('Coming Soon', 'Field block list will be available soon');
-    // TODO: Uncomment when FieldBlockList screen is created
-    // navigation.navigate('FieldBlockList', { farmId });
+    navigation.navigate('FieldBlockList', { farmId });
+  };
+
+  const handleCreateGreenhouse = () => {
+    navigation.navigate('CreateGreenhouse', { farmId });
+  };
+
+  const handleCreateFieldBlock = () => {
+    navigation.navigate('CreateFieldBlock', { farmId });
+  };
+
+  const handleViewAnalytics = () => {
+    // Navigate to Analytics tab with farm context
+    const rootNavigation = navigation.getParent();
+    if (rootNavigation) {
+      (rootNavigation as any).navigate('Analytics', {
+        screen: 'Dashboard',
+        params: { farmId }
+      });
+    }
   };
 
   const handleDelete = () => {
@@ -104,8 +91,14 @@ export const FarmDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            // TODO: Implement delete
-            navigation.goBack();
+            try {
+              // TODO: Implement delete endpoint if available
+              // await farmService.deleteFarm(farmId);
+              Alert.alert('Coming Soon', 'Delete functionality will be available soon');
+              // navigation.goBack();
+            } catch (error) {
+              Alert.alert('Error', 'Failed to delete farm');
+            }
           },
         },
       ]
@@ -120,7 +113,7 @@ export const FarmDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         onBackPress={() => navigation.goBack()}
       >
         <View style={styles.loadingContainer}>
-          <Text>Loading...</Text>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </Screen>
     );
@@ -135,6 +128,11 @@ export const FarmDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       scroll
       padding="md"
       headerActions={[
+        {
+          icon: 'refresh',
+          onPress: handleRefresh,
+          label: 'Refresh',
+        },
         {
           icon: 'create',
           onPress: handleEdit,
@@ -270,6 +268,23 @@ export const FarmDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
       {/* Quick Actions */}
       <View style={styles.actionsContainer}>
+        <Row gap="md">
+          <Button
+            title="Create Greenhouse"
+            icon="add-circle"
+            onPress={handleCreateGreenhouse}
+            variant="primary"
+            style={styles.halfButton}
+          />
+          <Button
+            title="Create Field Block"
+            icon="add-circle"
+            onPress={handleCreateFieldBlock}
+            variant="primary"
+            style={styles.halfButton}
+          />
+        </Row>
+
         <Button
           title="View Greenhouses"
           icon="business"
@@ -282,6 +297,14 @@ export const FarmDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           title="View Field Blocks"
           icon="grid"
           onPress={handleViewFieldBlocks}
+          variant="outline"
+          fullWidth
+          style={styles.actionButton}
+        />
+        <Button
+          title="View Analytics"
+          icon="analytics"
+          onPress={handleViewAnalytics}
           variant="outline"
           fullWidth
           style={styles.actionButton}
@@ -357,9 +380,13 @@ const styles = StyleSheet.create({
   actionsContainer: {
     marginTop: spacing.md,
     gap: spacing.md,
+    marginBottom: spacing.xl,
   },
   actionButton: {
     marginBottom: spacing.sm,
+  },
+  halfButton: {
+    flex: 1,
   },
 });
 

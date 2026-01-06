@@ -15,22 +15,41 @@ import { Ionicons } from '@expo/vector-icons';
 import { DashboardStackParamList } from '../../navigation/DashboardNavigator';
 import { useAuth } from '../../store/AuthContext';
 import { farmService } from '../../services/farm.service';
-import { Role, FarmResponse } from '../../types/api.types';
+import { analyticsService } from '../../services/analytics.service';
+import { Role, FarmResponse, DashboardSummaryDto } from '../../types/api.types';
 import { colors, spacing, typograph, borderRadius, shadows } from '../../theme/theme';
-import { formatDate, getCurrentWeek, getCurrentYear } from '../../utils/helpers';
+import { getCurrentWeek } from '../../utils/helpers';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+  Auth: undefined;
+  Main: {
+    screen: string;
+    params?: any;
+  };
+};
 
 type Props = NativeStackScreenProps<DashboardStackParamList, 'Dashboard'>;
 
 const DashboardScreen: React.FC<Props> = ({ navigation }) => {
+  const rootNavigation = useNavigation<any>();
   const { user } = useAuth();
   const [farms, setFarms] = useState<FarmResponse[]>([]);
   const [currentFarm, setCurrentFarm] = useState<FarmResponse | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardSummaryDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  useEffect(() => {
+    if (currentFarm) {
+      loadDashboardSummary(currentFarm.id);
+    }
+  }, [currentFarm]);
 
   const loadDashboardData = async () => {
     try {
@@ -40,13 +59,26 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
       
       // Set first farm as current if available
       if (farmsData.length > 0 && !currentFarm) {
-        setCurrentFarm(farmsData[0]);
+        const firstFarm = farmsData[0];
+        setCurrentFarm(firstFarm);
+        await loadDashboardSummary(firstFarm.id);
       }
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
       Alert.alert('Error', 'Failed to load farms');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadDashboardSummary = async (farmId: string) => {
+    try {
+      const summary = await analyticsService.getDashboardSummary(farmId);
+      setDashboardData(summary);
+    } catch (error) {
+      console.error('Failed to load dashboard summary:', error);
+      // Don't show alert here - farm might not have data yet
+      setDashboardData(null);
     }
   };
 
@@ -60,9 +92,38 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('FarmList');
   };
 
+  const handleFarmChange = async (farm: FarmResponse) => {
+    setCurrentFarm(farm);
+    await loadDashboardSummary(farm.id);
+  };
+
   const handleNewSession = () => {
     if (currentFarm) {
+      // TODO: Navigate to create session screen when implemented
       navigation.navigate('FarmDetail', { farmId: currentFarm.id });
+    } else {
+      Alert.alert('No Farm Selected', 'Please select a farm first');
+    }
+  };
+
+  const handleViewAnalytics = () => {
+    if (currentFarm) {
+      // Navigate to Analytics tab first, then to the specific screen
+      rootNavigation.navigate('Analytics', { 
+        screen: 'Dashboard',
+        params: { farmId: currentFarm.id }
+      });
+    } else {
+      Alert.alert('No Farm Selected', 'Please select a farm first');
+    }
+  };
+
+  const handleViewReports = () => {
+    if (currentFarm) {
+      rootNavigation.navigate('Analytics', { 
+        screen: 'Report',
+        params: { farmId: currentFarm.id }
+      });
     } else {
       Alert.alert('No Farm Selected', 'Please select a farm first');
     }
@@ -75,11 +136,10 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     return roleArray.includes(user.role);
   };
 
-  // Mock data for now - TODO: Replace with actual scouting service
-  const sessions: any[] = []; // Will be populated from scouting service later
-  const activeSessions = 0;
-  const completedThisWeek = 0;
-  const totalObservations = 0;
+  // Calculate active sessions (in progress)
+  const activeSessions = dashboardData?.totalSessions 
+    ? dashboardData.totalSessions - (dashboardData.totalSessions || 0)
+    : 0;
 
   if (loading) {
     return (
@@ -123,36 +183,78 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       {/* KPI Cards */}
-      <View style={styles.kpiContainer}>
-        <KPICard
-          title="Active Sessions"
-          value={activeSessions}
-          icon="timer"
-          color={colors.info}
-          subtitle="In progress"
-        />
-        <KPICard
-          title="Completed This Week"
-          value={completedThisWeek}
-          icon="checkmark-circle"
-          color={colors.success}
-          subtitle={`Week ${getCurrentWeek()}`}
-        />
-        <KPICard
-          title="Total Observations"
-          value={totalObservations}
-          icon="eye"
-          color={colors.secondary}
-          subtitle="All time"
-        />
-        <KPICard
-          title="Farms"
-          value={farms.length}
-          icon="leaf"
-          color={colors.primary}
-          subtitle="Under management"
-        />
-      </View>
+      {dashboardData && (
+        <View style={styles.kpiContainer}>
+          <KPICard
+            title="Total Sessions"
+            value={dashboardData.totalSessions}
+            icon="calendar"
+            color={colors.info}
+            subtitle="All time"
+          />
+          <KPICard
+            title="Active Scouts"
+            value={dashboardData.activeScouts}
+            icon="people"
+            color={colors.success}
+            subtitle="Working now"
+          />
+          <KPICard
+            title="Pests This Week"
+            value={dashboardData.pestsDetectedThisWeek}
+            icon="bug"
+            color={colors.error}
+            subtitle={`Week ${getCurrentWeek()}`}
+          />
+          <KPICard
+            title="Avg Severity"
+            value={dashboardData.averageSeverityThisWeek.toFixed(1)}
+            icon="alert-circle"
+            color={
+              dashboardData.averageSeverityThisWeek > dashboardData.averageSeverityLastWeek
+                ? colors.error
+                : colors.success
+            }
+            subtitle={
+              dashboardData.averageSeverityThisWeek > dashboardData.averageSeverityLastWeek
+                ? '↑ Increasing'
+                : '↓ Decreasing'
+            }
+          />
+        </View>
+      )}
+
+      {/* Severity Comparison Card */}
+      {dashboardData && (
+        <Card style={[styles.severityCard, shadows.sm]}>
+          <Card.Content>
+            <Text style={styles.cardTitle}>Severity Trend</Text>
+            <View style={styles.severityComparison}>
+              <View style={styles.severityItem}>
+                <Text style={styles.severityLabel}>This Week</Text>
+                <Text style={[styles.severityValue, { color: colors.primary }]}>
+                  {dashboardData.averageSeverityThisWeek.toFixed(2)}
+                </Text>
+              </View>
+              <View style={styles.severityDivider} />
+              <View style={styles.severityItem}>
+                <Text style={styles.severityLabel}>Last Week</Text>
+                <Text style={[styles.severityValue, { color: colors.textSecondary }]}>
+                  {dashboardData.averageSeverityLastWeek.toFixed(2)}
+                </Text>
+              </View>
+            </View>
+            {dashboardData.averageSeverityThisWeek > dashboardData.averageSeverityLastWeek && (
+              <View style={styles.warningBanner}>
+                <Ionicons name="warning" size={20} color={colors.error} />
+                <Text style={styles.warningText}>
+                  Severity is increasing - review alerts
+                </Text>
+              </View>
+            )}
+          </Card.Content>
+        </Card>
+      )}
 
       {/* Quick Actions */}
       {hasRole([Role.MANAGER, Role.FARM_ADMIN, Role.SUPER_ADMIN]) && (
@@ -169,7 +271,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
             <TouchableOpacity
               style={[styles.actionCard, { backgroundColor: colors.secondary }]}
-              onPress={() => Alert.alert('Coming Soon', 'Analytics feature coming soon')}
+              onPress={handleViewAnalytics}
             >
               <Ionicons name="analytics" size={40} color={colors.surface} />
               <Text style={styles.actionText}>View Analytics</Text>
@@ -177,7 +279,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 
             <TouchableOpacity
               style={[styles.actionCard, { backgroundColor: colors.accent }]}
-              onPress={() => Alert.alert('Coming Soon', 'Reports feature coming soon')}
+              onPress={handleViewReports}
             >
               <Ionicons name="document-text" size={40} color={colors.surface} />
               <Text style={styles.actionText}>Reports</Text>
@@ -214,6 +316,26 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
             </Button>
           )}
         </View>
+      )}
+
+      {/* No Data State */}
+      {farms.length > 0 && !dashboardData && (
+        <Card style={[styles.noDataCard, shadows.sm]}>
+          <Card.Content style={styles.noDataContent}>
+            <Ionicons name="information-circle-outline" size={60} color={colors.info} />
+            <Text style={styles.noDataTitle}>No Data Yet</Text>
+            <Text style={styles.noDataText}>
+              Start scouting to see analytics and insights
+            </Text>
+            <Button
+              mode="contained"
+              onPress={handleNewSession}
+              style={styles.noDataButton}
+            >
+              Start First Session
+            </Button>
+          </Card.Content>
+        </Card>
       )}
     </ScrollView>
   );
@@ -324,6 +446,54 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
+  severityCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.lg,
+  },
+  cardTitle: {
+    ...typograph.subtitle,
+    color: colors.text,
+    fontWeight: '600',
+    marginBottom: spacing.md,
+  },
+  severityComparison: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  severityItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  severityLabel: {
+    ...typograph.caption,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  severityValue: {
+    ...typograph.h2,
+    fontWeight: '700',
+  },
+  severityDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: colors.border,
+  },
+  warningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+    padding: spacing.sm,
+    backgroundColor: `${colors.error}10`,
+    borderRadius: borderRadius.sm,
+  },
+  warningText: {
+    ...typograph.bodySmall,
+    color: colors.error,
+    flex: 1,
+  },
   section: {
     marginBottom: spacing.lg,
   },
@@ -371,6 +541,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   emptyButton: {
+    marginTop: spacing.md,
+  },
+  noDataCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    marginTop: spacing.lg,
+  },
+  noDataContent: {
+    alignItems: 'center',
+    paddingVertical: spacing.xl,
+  },
+  noDataTitle: {
+    ...typograph.h3,
+    color: colors.text,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  noDataText: {
+    ...typograph.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+  },
+  noDataButton: {
     marginTop: spacing.md,
   },
 });

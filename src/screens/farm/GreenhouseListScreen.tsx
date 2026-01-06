@@ -1,7 +1,7 @@
 // src/screens/farm/GreenhouseListScreen.tsx
-
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { GreenhouseCard } from '../../components/cards/GreenhouseCard';
@@ -9,17 +9,12 @@ import { FloatingActionButton } from '../../components/navigation/FloatingAction
 import { Input } from '../../components/common/Input';
 import { colors, spacing, typograph } from '../../theme/theme';
 import { GreenhouseDto } from '../../types/api.types';
+import { farmService } from '../../services/farm.service';
+import { DashboardStackParamList } from '../../navigation/DashboardNavigator';
 
-interface GreenhouseListScreenProps {
-  navigation: any;
-  route: {
-    params: {
-      farmId: string;
-    };
-  };
-}
+type Props = NativeStackScreenProps<DashboardStackParamList, 'GreenhouseList'>;
 
-export const GreenhouseListScreen: React.FC<GreenhouseListScreenProps> = ({
+export const GreenhouseListScreen: React.FC<Props> = ({
   navigation,
   route,
 }) => {
@@ -41,59 +36,13 @@ export const GreenhouseListScreen: React.FC<GreenhouseListScreenProps> = ({
   const loadGreenhouses = async () => {
     try {
       setLoading(true);
-      // TODO: Implement API call
-      // const data = await greenhouseService.getGreenhouses(farmId);
-      // setGreenhouses(data);
-      
-      // Mock data
-      setTimeout(() => {
-        const mockData: GreenhouseDto[] = [
-          {
-            id: '1',
-            version: 1,
-            farmId,
-            name: 'Greenhouse A',
-            description: 'Main tomato production greenhouse',
-            bayCount: 10,
-            benchesPerBay: 4,
-            spotChecksPerBench: 5,
-            bayTags: ['North', 'Premium'],
-            benchTags: ['Row-1', 'Row-2'],
-            active: true,
-          },
-          {
-            id: '2',
-            version: 1,
-            farmId,
-            name: 'Greenhouse B',
-            description: 'Pepper cultivation area',
-            bayCount: 8,
-            benchesPerBay: 4,
-            spotChecksPerBench: 5,
-            bayTags: ['South'],
-            benchTags: ['Standard'],
-            active: true,
-          },
-          {
-            id: '3',
-            version: 1,
-            farmId,
-            name: 'Greenhouse C',
-            description: 'Experimental crops',
-            bayCount: 6,
-            benchesPerBay: 3,
-            spotChecksPerBench: 4,
-            bayTags: ['East', 'Research'],
-            benchTags: ['Test'],
-            active: false,
-          },
-        ];
-        setGreenhouses(mockData);
-        setLoading(false);
-      }, 1000);
+      const data = await farmService.getGreenhouses(farmId);
+      setGreenhouses(data);
     } catch (error) {
-      setLoading(false);
       console.error('Failed to load greenhouses:', error);
+      Alert.alert('Error', 'Failed to load greenhouses');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -114,7 +63,7 @@ export const GreenhouseListScreen: React.FC<GreenhouseListScreenProps> = ({
       (greenhouse) =>
         greenhouse.name.toLowerCase().includes(query) ||
         greenhouse.description?.toLowerCase().includes(query) ||
-        greenhouse.bayTags.some(tag => tag.toLowerCase().includes(query))
+        (greenhouse.bayTags && greenhouse.bayTags.some(tag => tag.toLowerCase().includes(query)))
     );
     setFilteredGreenhouses(filtered);
   };
@@ -223,3 +172,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default GreenhouseListScreen;

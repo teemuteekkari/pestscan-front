@@ -1,18 +1,18 @@
 // src/screens/auth/LoginScreen.tsx
-
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
-import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
-import { LoginRequest } from '../../types/api.types';
+import { colors, spacing, typograph } from '../../theme/theme';
+import { useAuth } from '../../store/AuthContext';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
 
-interface LoginScreenProps {
-  navigation: any;
-}
+type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+export const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,31 +42,38 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
     try {
       setLoading(true);
-      // TODO: Implement API call
-      // const loginData: LoginRequest = { email: email.toLowerCase(), password };
-      // const response = await authService.login(loginData);
-      // await AsyncStorage.setItem('token', response.token);
-      // navigation.replace('Main');
+      await login({ 
+        email: email.toLowerCase().trim(), 
+        password: password
+      });
       
-      // Mock login for now
-      setTimeout(() => {
-        setLoading(false);
-        console.log('Login successful');
-        // navigation.replace('Main');
-      }, 1500);
-    } catch (error) {
-      setLoading(false);
-      setErrors({ password: 'Invalid email or password' });
+      // Navigation is handled by AppNavigator based on auth state
+      // No need to navigate manually
+    } catch (error: any) {
       console.error('Login failed:', error);
+      
+      // Handle specific error messages from backend
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.errorCode ||
+                          'Invalid email or password';
+      
+      setErrors({ password: errorMessage });
+      Alert.alert('Login Failed', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
+    Alert.alert('Coming Soon', 'Password reset functionality will be available soon');
+    // TODO: Implement when backend has forgot password endpoint
+    // navigation.navigate('ForgotPassword');
   };
 
   const handleRegister = () => {
-    navigation.navigate('Register');
+    Alert.alert('Coming Soon', 'Registration will be available soon');
+    // TODO: Uncomment when Register screen is ready
+    // navigation.navigate('Register');
   };
 
   return (
@@ -78,7 +85,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             <View style={styles.logoPlaceholder}>
               <Text style={styles.logoText}>🌱</Text>
             </View>
-            <Text style={styles.appName}>PestScan</Text>
+            <Text style={styles.appName}>PestScout</Text>
             <Text style={styles.tagline}>Agricultural Pest Management</Text>
           </View>
 
@@ -252,4 +259,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 export default LoginScreen;

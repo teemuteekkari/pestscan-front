@@ -1,26 +1,21 @@
 // src/screens/farm/FieldBlockListScreen.tsx
-
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card } from '../../components/common/Card';
 import { Badge } from '../../components/common/Badge';
 import { FloatingActionButton } from '../../components/navigation/FloatingActionButton';
 import { Input } from '../../components/common/Input';
-import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph } from '../../theme/theme';
 import { FieldBlockDto } from '../../types/api.types';
+import { farmService } from '../../services/farm.service';
+import { DashboardStackParamList } from '../../navigation/DashboardNavigator';
 
-interface FieldBlockListScreenProps {
-  navigation: any;
-  route: {
-    params: {
-      farmId: string;
-    };
-  };
-}
+type Props = NativeStackScreenProps<DashboardStackParamList, 'FieldBlockList'>;
 
-export const FieldBlockListScreen: React.FC<FieldBlockListScreenProps> = ({
+export const FieldBlockListScreen: React.FC<Props> = ({
   navigation,
   route,
 }) => {
@@ -42,50 +37,13 @@ export const FieldBlockListScreen: React.FC<FieldBlockListScreenProps> = ({
   const loadFieldBlocks = async () => {
     try {
       setLoading(true);
-      // TODO: Implement API call
-      // const data = await fieldBlockService.getFieldBlocks(farmId);
-      // setFieldBlocks(data);
-      
-      // Mock data
-      setTimeout(() => {
-        const mockData: FieldBlockDto[] = [
-          {
-            id: '1',
-            version: 1,
-            farmId,
-            name: 'North Field',
-            bayCount: 20,
-            spotChecksPerBay: 8,
-            bayTags: ['Organic', 'Premium'],
-            active: true,
-          },
-          {
-            id: '2',
-            version: 1,
-            farmId,
-            name: 'South Field',
-            bayCount: 15,
-            spotChecksPerBay: 6,
-            bayTags: ['Standard'],
-            active: true,
-          },
-          {
-            id: '3',
-            version: 1,
-            farmId,
-            name: 'East Field',
-            bayCount: 12,
-            spotChecksPerBay: 5,
-            bayTags: ['New', 'Testing'],
-            active: false,
-          },
-        ];
-        setFieldBlocks(mockData);
-        setLoading(false);
-      }, 1000);
+      const data = await farmService.getFieldBlocks(farmId);
+      setFieldBlocks(data);
     } catch (error) {
-      setLoading(false);
       console.error('Failed to load field blocks:', error);
+      Alert.alert('Error', 'Failed to load field blocks');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,13 +63,15 @@ export const FieldBlockListScreen: React.FC<FieldBlockListScreenProps> = ({
     const filtered = fieldBlocks.filter(
       (block) =>
         block.name.toLowerCase().includes(query) ||
-        block.bayTags.some(tag => tag.toLowerCase().includes(query))
+        (block.bayTags && block.bayTags.some(tag => tag.toLowerCase().includes(query)))
     );
     setFilteredFieldBlocks(filtered);
   };
 
   const handleFieldBlockPress = (block: FieldBlockDto) => {
-    navigation.navigate('FieldBlockDetail', { fieldBlockId: block.id });
+    Alert.alert('Coming Soon', 'Field block detail view will be available soon');
+    // TODO: Uncomment when FieldBlockDetail screen is created
+    // navigation.navigate('FieldBlockDetail', { fieldBlockId: block.id });
   };
 
   const handleCreateFieldBlock = () => {
@@ -156,7 +116,7 @@ export const FieldBlockListScreen: React.FC<FieldBlockListScreenProps> = ({
           </View>
         </View>
 
-        {item.bayTags.length > 0 && (
+        {item.bayTags && item.bayTags.length > 0 && (
           <View style={styles.tagsContainer}>
             {item.bayTags.slice(0, 3).map((tag, index) => (
               <Badge key={index} label={tag} variant="info" size="sm" />
@@ -315,3 +275,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default FieldBlockListScreen;

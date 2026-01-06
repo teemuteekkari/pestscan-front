@@ -1,14 +1,13 @@
 // src/screens/analytics/HeatMapScreen.tsx
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '../../components/layout/Screen';
 import { Card } from '../../components/common/Card';
 import { HeatMapChart } from '../../components/charts/HeatMapChart';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
-import { Badge } from '../../components/common/Badge';
 import { Row } from '../../components/layout/Row';
 import { Divider } from '../../components/layout/Divider';
 import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
@@ -16,39 +15,61 @@ import {
   HeatmapResponse, 
   HeatmapCellResponse, 
   SeverityLevel,
-  ObservationCategory 
 } from '../../types/api.types';
+import { analyticsService } from '../../services/analytics.service';
+import { AnalyticsStackParamList } from '../../navigation/AnalyticsNavigator';
 
-interface HeatMapScreenProps {
-  navigation: any;
-  route: any;
-}
+type Props = NativeStackScreenProps<AnalyticsStackParamList, 'Heatmap'>;
 
 type ViewMode = 'total' | 'pest' | 'disease' | 'beneficial' | 'severity';
-type TargetType = 'all' | 'greenhouse' | 'fieldblock';
 
-export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
+// Helper to get current week number
+const getCurrentWeek = (): number => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const diff = now.getTime() - start.getTime();
+  const oneWeek = 1000 * 60 * 60 * 24 * 7;
+  return Math.floor(diff / oneWeek) + 1;
+};
+
+export const HeatMapScreen: React.FC<Props> = ({ navigation, route }) => {
+  const farmId = route.params?.farmId;
   const [loading, setLoading] = useState(false);
-  const [selectedWeek, setSelectedWeek] = useState('47');
-  const [selectedYear, setSelectedYear] = useState('2024');
+  const [selectedWeek, setSelectedWeek] = useState(getCurrentWeek().toString());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [viewMode, setViewMode] = useState<ViewMode>('total');
-  const [targetType, setTargetType] = useState<TargetType>('all');
-  const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
   const [heatmapData, setHeatmapData] = useState<HeatmapResponse | null>(null);
 
   useEffect(() => {
-    loadHeatmap();
-  }, [selectedWeek, selectedYear, targetType, selectedTarget]);
+    if (farmId) {
+      loadHeatmap();
+    }
+  }, [farmId, selectedWeek, selectedYear]);
 
   const loadHeatmap = async () => {
+    if (!farmId) {
+      Alert.alert('Error', 'No farm selected');
+      return;
+    }
+
+    const week = parseInt(selectedWeek, 10);
+    const year = parseInt(selectedYear, 10);
+
+    // Validate inputs
+    if (isNaN(week) || week < 1 || week > 53) {
+      Alert.alert('Invalid Week', 'Please enter a week number between 1 and 53');
+      return;
+    }
+
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      Alert.alert('Invalid Year', 'Please enter a valid year');
+      return;
+    }
+
     try {
       setLoading(true);
-      // TODO: Implement API call
-      // const data = await heatmapService.getHeatmap(farmId, week, year, targetId);
-      // setHeatmapData(data);
-
-      // Mock data
-      setHeatmapData(generateMockHeatmapData());
+      const data = await analyticsService.getHeatmap(farmId, week, year);
+      setHeatmapData(data);
     } catch (error) {
       console.error('Failed to load heatmap:', error);
       Alert.alert('Error', 'Failed to load heatmap data');
@@ -57,72 +78,20 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
     }
   };
 
-  const generateMockHeatmapData = (): HeatmapResponse => {
-    const cells: HeatmapCellResponse[] = [];
-    
-    for (let bay = 0; bay < 10; bay++) {
-      for (let bench = 0; bench < 4; bench++) {
-        const pestCount = Math.floor(Math.random() * 50);
-        const diseaseCount = Math.floor(Math.random() * 30);
-        const beneficialCount = Math.floor(Math.random() * 20);
-        const totalCount = pestCount + diseaseCount + beneficialCount;
-        
-        cells.push({
-          bayIndex: bay,
-          benchIndex: bench,
-          pestCount,
-          diseaseCount,
-          beneficialCount,
-          totalCount,
-          severityLevel: getSeverityLevel(totalCount),
-          colorHex: getSeverityColor(getSeverityLevel(totalCount)),
-        });
-      }
-    }
-
-    return {
-      farmId: '1',
-      farmName: 'Green Valley Farm',
-      week: 47,
-      year: 2024,
-      bayCount: 10,
-      benchesPerBay: 4,
-      cells,
-      sections: [],
-      severityLegend: [
-        { level: 'ZERO', minInclusive: 0, maxInclusive: 0, colorHex: '#E5E7EB' },
-        { level: 'LOW', minInclusive: 1, maxInclusive: 10, colorHex: '#10B981' },
-        { level: 'MODERATE', minInclusive: 11, maxInclusive: 25, colorHex: '#FBBF24' },
-        { level: 'HIGH', minInclusive: 26, maxInclusive: 50, colorHex: '#F59E0B' },
-        { level: 'VERY_HIGH', minInclusive: 51, maxInclusive: 75, colorHex: '#EF4444' },
-        { level: 'EMERGENCY', minInclusive: 76, maxInclusive: 999, colorHex: '#DC2626' },
-      ],
-    };
-  };
-
-  const getSeverityLevel = (count: number): SeverityLevel => {
-    if (count === 0) return SeverityLevel.ZERO;
-    if (count <= 10) return SeverityLevel.LOW;
-    if (count <= 25) return SeverityLevel.MODERATE;
-    if (count <= 50) return SeverityLevel.HIGH;
-    if (count <= 75) return SeverityLevel.VERY_HIGH;
-    return SeverityLevel.EMERGENCY;
-  };
-
   const getSeverityColor = (level: SeverityLevel): string => {
     switch (level) {
       case SeverityLevel.ZERO:
-        return '#E5E7EB';
+        return '#2ecc71';
       case SeverityLevel.LOW:
-        return '#10B981';
+        return '#f1c40f';
       case SeverityLevel.MODERATE:
-        return '#FBBF24';
+        return '#e67e22';
       case SeverityLevel.HIGH:
-        return '#F59E0B';
+        return '#e74c3c';
       case SeverityLevel.VERY_HIGH:
-        return '#EF4444';
+        return '#c0392b';
       case SeverityLevel.EMERGENCY:
-        return '#DC2626';
+        return '#7f0000';
       default:
         return colors.border;
     }
@@ -145,12 +114,12 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
   };
 
   const getHeatColor = (value: number): string => {
-    if (value === 0) return '#E5E7EB';
-    if (value <= 10) return '#10B981';
-    if (value <= 25) return '#FBBF24';
-    if (value <= 50) return '#F59E0B';
-    if (value <= 75) return '#EF4444';
-    return '#DC2626';
+    if (value === 0) return '#2ecc71';
+    if (value <= 5) return '#f1c40f';
+    if (value <= 10) return '#e67e22';
+    if (value <= 20) return '#e74c3c';
+    if (value <= 30) return '#c0392b';
+    return '#7f0000';
   };
 
   const getCellValue = (cell: HeatmapCellResponse): number => {
@@ -245,10 +214,20 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
 
   const stats = getStats();
 
+  if (!farmId) {
+    return (
+      <Screen title="Heatmap">
+        <View style={styles.emptyContainer}>
+          <Text>No farm selected</Text>
+        </View>
+      </Screen>
+    );
+  }
+
   return (
     <Screen
       title="Heatmap"
-      subtitle={`Week ${selectedWeek}, ${selectedYear}`}
+      subtitle={heatmapData ? `${heatmapData.farmName} - Week ${heatmapData.week}, ${heatmapData.year}` : undefined}
       showBack
       onBackPress={() => navigation.goBack()}
       scroll
@@ -256,7 +235,7 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
       headerActions={[
         {
           icon: 'share',
-          onPress: () => console.log('Share heatmap'),
+          onPress: () => Alert.alert('Coming Soon', 'Share feature coming soon'),
           label: 'Share',
         },
       ]}
@@ -282,6 +261,13 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
             containerStyle={styles.input}
           />
         </Row>
+        <Button
+          title="Load Heatmap"
+          icon="refresh"
+          onPress={loadHeatmap}
+          loading={loading}
+          style={styles.loadButton}
+        />
       </Card>
 
       {/* View Mode Selector */}
@@ -317,38 +303,40 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
       </Card>
 
       {/* Stats Overview */}
-      <Card padding="md">
-        <Text style={styles.cardTitle}>Overview</Text>
-        <View style={styles.statsGrid}>
-          <View style={styles.statItem}>
-            <Ionicons name="eye" size={20} color={colors.primary} />
-            <Text style={styles.statValue}>{stats.total}</Text>
-            <Text style={styles.statLabel}>Total</Text>
+      {heatmapData && (
+        <Card padding="md">
+          <Text style={styles.cardTitle}>Overview</Text>
+          <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <Ionicons name="eye" size={20} color={colors.primary} />
+              <Text style={styles.statValue}>{stats.total}</Text>
+              <Text style={styles.statLabel}>Total</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Ionicons name="analytics" size={20} color={colors.primary} />
+              <Text style={styles.statValue}>{stats.avg}</Text>
+              <Text style={styles.statLabel}>Average</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Ionicons name="arrow-up" size={20} color={colors.error} />
+              <Text style={styles.statValue}>{stats.max}</Text>
+              <Text style={styles.statLabel}>Maximum</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Ionicons name="flame" size={20} color={colors.error} />
+              <Text style={styles.statValue}>{stats.hotspots}</Text>
+              <Text style={styles.statLabel}>Hotspots</Text>
+            </View>
           </View>
-          <View style={styles.statItem}>
-            <Ionicons name="analytics" size={20} color={colors.primary} />
-            <Text style={styles.statValue}>{stats.avg}</Text>
-            <Text style={styles.statLabel}>Average</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Ionicons name="arrow-up" size={20} color={colors.error} />
-            <Text style={styles.statValue}>{stats.max}</Text>
-            <Text style={styles.statLabel}>Maximum</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Ionicons name="flame" size={20} color={colors.error} />
-            <Text style={styles.statValue}>{stats.hotspots}</Text>
-            <Text style={styles.statLabel}>Hotspots</Text>
-          </View>
-        </View>
-      </Card>
+        </Card>
+      )}
 
       {/* Heatmap */}
       {loading ? (
         <Card padding="md">
           <Text style={styles.loadingText}>Loading heatmap...</Text>
         </Card>
-      ) : (
+      ) : heatmapData ? (
         <HeatMapChart
           title={`${viewModes.find(m => m.value === viewMode)?.label} Heatmap`}
           data={data}
@@ -359,6 +347,12 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
           legend={viewMode === 'severity' ? legend : undefined}
           onCellPress={handleCellPress}
         />
+      ) : (
+        <Card padding="md">
+          <Text style={styles.emptyText}>
+            Select a week and year, then tap "Load Heatmap" to view data
+          </Text>
+        </Card>
       )}
 
       {/* Hotspot Analysis */}
@@ -376,7 +370,7 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
           <Button
             title="View Hotspot Details"
             icon="list"
-            onPress={() => console.log('View hotspots')}
+            onPress={() => Alert.alert('Coming Soon', 'Hotspot details coming soon')}
             variant="danger"
             size="sm"
             style={styles.alertButton}
@@ -385,47 +379,37 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
       )}
 
       {/* Legend Info */}
-      <Card padding="md">
-        <Text style={styles.cardTitle}>How to Read the Heatmap</Text>
-        <View style={styles.infoItem}>
-          <Ionicons name="square" size={16} color="#10B981" />
-          <Text style={styles.infoText}>Green: Low activity (0-10 observations)</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Ionicons name="square" size={16} color="#FBBF24" />
-          <Text style={styles.infoText}>Yellow: Moderate activity (11-25)</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Ionicons name="square" size={16} color="#F59E0B" />
-          <Text style={styles.infoText}>Orange: High activity (26-50)</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Ionicons name="square" size={16} color="#EF4444" />
-          <Text style={styles.infoText}>Red: Very high activity (51-75)</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Ionicons name="square" size={16} color="#DC2626" />
-          <Text style={styles.infoText}>Dark Red: Emergency (76+)</Text>
-        </View>
-        <Divider marginVertical="sm" />
-        <Text style={styles.infoNote}>
-          Tap any cell to view detailed information about that specific location
-        </Text>
-      </Card>
+      {heatmapData && (
+        <Card padding="md">
+          <Text style={styles.cardTitle}>Severity Legend</Text>
+          {heatmapData.severityLegend.map((item, index) => (
+            <View key={index} style={styles.infoItem}>
+              <View style={[styles.colorBox, { backgroundColor: item.colorHex }]} />
+              <Text style={styles.infoText}>
+                {item.level}: {item.minInclusive}-{item.maxInclusive === 2147483647 ? '∞' : item.maxInclusive} observations
+              </Text>
+            </View>
+          ))}
+          <Divider marginVertical="sm" />
+          <Text style={styles.infoNote}>
+            Tap any cell to view detailed information about that specific location
+          </Text>
+        </Card>
+      )}
 
       {/* Action Buttons */}
       <Row gap="md" style={styles.actionButtons}>
         <Button
           title="Generate Report"
           icon="document-text"
-          onPress={() => navigation.navigate('Report')}
+          onPress={() => Alert.alert('Coming Soon', 'Report generation coming soon')}
           variant="outline"
           style={styles.actionButton}
         />
         <Button
           title="Export Data"
           icon="download"
-          onPress={() => console.log('Export')}
+          onPress={() => Alert.alert('Coming Soon', 'Export feature coming soon')}
           variant="outline"
           style={styles.actionButton}
         />
@@ -435,6 +419,12 @@ export const HeatMapScreen: React.FC<HeatMapScreenProps> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
   cardTitle: {
     ...typograph.subtitle,
     color: colors.text,
@@ -443,6 +433,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+  },
+  loadButton: {
+    marginTop: spacing.md,
   },
   modeGrid: {
     flexDirection: 'row',
@@ -503,6 +496,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: spacing.xl,
   },
+  emptyText: {
+    ...typograph.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    padding: spacing.xl,
+  },
   alertCard: {
     backgroundColor: `${colors.error}10`,
     borderLeftWidth: 4,
@@ -534,9 +533,17 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
+  colorBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   infoText: {
     ...typograph.bodySmall,
     color: colors.text,
+    flex: 1,
   },
   infoNote: {
     ...typograph.caption,
@@ -552,4 +559,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-export default HeatMapScreen
+
+export default HeatMapScreen;

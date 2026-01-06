@@ -1,52 +1,116 @@
 // src/screens/analytics/MonthlyReportScreen.tsx
-
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screen } from '../../components/layout/Screen';
 import { Card } from '../../components/common/Card';
 import { BarChart } from '../../components/charts/BarChart';
-import { LineChart } from '../../components/charts/LineChart';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { StatCard, StatCardGrid } from '../../components/cards/StatCard';
 import { Row } from '../../components/layout/Row';
-import { colors, spacing, typograph, borderRadius } from '../../theme/theme';
+import { colors, spacing, typograph } from '../../theme/theme';
+import { analyticsService } from '../../services/analytics.service';
+import { FarmMonthlyReportDto } from '../../types/api.types';
+import { AnalyticsStackParamList } from '../../navigation/AnalyticsNavigator';
 
-interface MonthlyReportScreenProps {
-  navigation: any;
-  route: any;
-}
+type Props = NativeStackScreenProps<AnalyticsStackParamList, 'MonthlyReport'>;
 
-export const MonthlyReportScreen: React.FC<MonthlyReportScreenProps> = ({
-  navigation,
-}) => {
-  const [selectedMonth, setSelectedMonth] = useState('11');
-  const [selectedYear, setSelectedYear] = useState('2024');
+export const MonthlyReportScreen: React.FC<Props> = ({ navigation, route }) => {
+  const farmId = route.params?.farmId;
+  const initialYear = route.params?.year || new Date().getFullYear();
+  const initialMonth = route.params?.month || new Date().getMonth() + 1;
+
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth.toString());
+  const [selectedYear, setSelectedYear] = useState(initialYear.toString());
   const [loading, setLoading] = useState(false);
+  const [reportData, setReportData] = useState<FarmMonthlyReportDto | null>(null);
 
-  const monthlyData = {
-    labels: ['W1', 'W2', 'W3', 'W4'],
-    datasets: [{
-      data: [145, 178, 162, 195],
-    }],
+  useEffect(() => {
+    if (farmId) {
+      loadReport();
+    }
+  }, [farmId]);
+
+  const loadReport = async () => {
+    if (!farmId) {
+      Alert.alert('Error', 'No farm selected');
+      return;
+    }
+
+    const year = parseInt(selectedYear, 10);
+    const month = parseInt(selectedMonth, 10);
+
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      Alert.alert('Invalid Year', 'Please enter a valid year');
+      return;
+    }
+
+    if (isNaN(month) || month < 1 || month > 12) {
+      Alert.alert('Invalid Month', 'Please enter a month between 1 and 12');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await analyticsService.getMonthlyReport(farmId, year, month);
+      setReportData(data);
+    } catch (error) {
+      console.error('Failed to load monthly report:', error);
+      Alert.alert('Error', 'Failed to load monthly report');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const categoryData = {
-    labels: ['Pests', 'Diseases', 'Beneficial'],
-    datasets: [{
-      data: [345, 187, 98],
-    }],
+  const getMonthName = (month: number): string => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1] || '';
   };
 
-  const handleGenerateReport = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
-  };
+  // Prepare weekly breakdown data from heatmaps
+  const weeklyData = reportData?.weeklyHeatmaps.length
+    ? {
+        labels: reportData.weeklyHeatmaps.map((w) => `W${w.weekNumber}`),
+        datasets: [{
+          data: reportData.weeklyHeatmaps.map((w) => 
+            w.sections.reduce((sum, s) => 
+              sum + s.cells.reduce((cellSum, c) => cellSum + c.totalCount, 0), 0
+            )
+          ),
+        }],
+      }
+    : null;
+
+  // Prepare severity trend data
+  const severityTrendData = reportData?.severityTrend.length
+    ? {
+        labels: reportData.severityTrend.map((t) => 
+          new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        ),
+        datasets: [{
+          data: reportData.severityTrend.map((t) => t.severity),
+        }],
+      }
+    : null;
+
+  if (!farmId) {
+    return (
+      <Screen title="Monthly Report">
+        <View style={styles.emptyContainer}>
+          <Text>No farm selected</Text>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen
       title="Monthly Report"
-      subtitle="November 2024"
+      subtitle={reportData ? `${getMonthName(reportData.month)} ${reportData.year}` : undefined}
       showBack
       onBackPress={() => navigation.goBack()}
       scroll
@@ -54,7 +118,7 @@ export const MonthlyReportScreen: React.FC<MonthlyReportScreenProps> = ({
       headerActions={[
         {
           icon: 'share',
-          onPress: () => console.log('Export'),
+          onPress: () => navigation.navigate('Report', { farmId }),
           label: 'Export',
         },
       ]}
@@ -83,123 +147,135 @@ export const MonthlyReportScreen: React.FC<MonthlyReportScreenProps> = ({
         <Button
           title="Generate Report"
           icon="refresh"
-          onPress={handleGenerateReport}
+          onPress={loadReport}
           loading={loading}
           style={styles.generateButton}
         />
       </Card>
 
-      {/* Monthly Stats */}
-      <StatCardGrid columns={2}>
-        <StatCard
-          title="Total Observations"
-          value={630}
-          icon="eye"
-          variant="info"
-          trend={{ value: 15.2, isPositive: true }}
-        />
-        <StatCard
-          title="Sessions"
-          value={24}
-          icon="calendar"
-          variant="success"
-          subtitle="100% complete"
-        />
-        <StatCard
-          title="Avg per Week"
-          value={157}
-          icon="trending-up"
-          variant="default"
-        />
-        <StatCard
-          title="Coverage"
-          value="95%"
-          icon="grid"
-          variant="success"
-        />
-      </StatCardGrid>
+      {reportData ? (
+        <>
+          {/* Monthly Stats */}
+          <StatCardGrid columns={2}>
+            <StatCard
+              title="Total Observations"
+              value={reportData.totalObservations}
+              icon="eye"
+              variant="info"
+            />
+            <StatCard
+              title="Sessions"
+              value={reportData.totalSessions}
+              icon="calendar"
+              variant="success"
+            />
+            <StatCard
+              title="Active Scouts"
+              value={reportData.activeScouts}
+              icon="people"
+              variant="default"
+            />
+            <StatCard
+              title="Pests Detected"
+              value={reportData.distinctPestsDetected}
+              icon="bug"
+              variant="error"
+            />
+          </StatCardGrid>
 
-      {/* Weekly Breakdown */}
-      <BarChart
-        title="Weekly Observations"
-        data={monthlyData}
-        height={220}
-      />
+          {/* Severity Stats */}
+          <Card padding="md">
+            <Text style={styles.cardTitle}>Severity Analysis</Text>
+            <Row gap="lg" justify="space-around">
+              <View style={styles.severityStat}>
+                <Text style={styles.severityLabel}>Average</Text>
+                <Text style={[styles.severityValue, { color: colors.primary }]}>
+                  {reportData.averageSeverity.toFixed(2)}
+                </Text>
+              </View>
+              <View style={styles.severityDivider} />
+              <View style={styles.severityStat}>
+                <Text style={styles.severityLabel}>Worst</Text>
+                <Text style={[styles.severityValue, { color: colors.error }]}>
+                  {reportData.worstSeverity.toFixed(2)}
+                </Text>
+              </View>
+            </Row>
+          </Card>
 
-      {/* Category Distribution */}
-      <BarChart
-        title="Category Distribution"
-        data={categoryData}
-        height={220}
-      />
+          {/* Weekly Breakdown */}
+          {weeklyData && (
+            <BarChart
+              title="Weekly Observations"
+              data={weeklyData}
+              height={220}
+            />
+          )}
 
-      {/* Monthly Highlights */}
-      <Card padding="md">
-        <Text style={styles.cardTitle}>Monthly Highlights</Text>
-        
-        <View style={styles.highlightSection}>
-          <Text style={styles.highlightTitle}>🔴 Critical Issues</Text>
-          <Text style={styles.highlightText}>
-            • Peak thrips population in Week 3{'\n'}
-            • Disease outbreak in Greenhouse 2{'\n'}
-            • Emergency intervention required in Bay 5
+          {/* Severity Trend */}
+          {severityTrendData && (
+            <BarChart
+              title="Severity Trend"
+              data={severityTrendData}
+              height={220}
+            />
+          )}
+
+          {/* Top Pest Trends */}
+          {reportData.topPestTrends.length > 0 && (
+            <Card padding="md">
+              <Text style={styles.cardTitle}>Top Pest Trends</Text>
+              {reportData.topPestTrends.slice(0, 5).map((pest, index) => (
+                <View key={index} style={styles.pestItem}>
+                  <View style={styles.pestLeft}>
+                    <Text style={styles.pestRank}>{index + 1}</Text>
+                    <Text style={styles.pestName}>{pest.speciesCode}</Text>
+                  </View>
+                  <Text style={styles.pestCount}>
+                    {pest.points.length} data points
+                  </Text>
+                </View>
+              ))}
+            </Card>
+          )}
+
+          {/* Period Info */}
+          <Card padding="md">
+            <Text style={styles.cardTitle}>Report Period</Text>
+            <Text style={styles.infoText}>
+              📅 From: {new Date(reportData.periodStart).toLocaleDateString()}
+            </Text>
+            <Text style={styles.infoText}>
+              📅 To: {new Date(reportData.periodEnd).toLocaleDateString()}
+            </Text>
+          </Card>
+
+          <Button
+            title="Export PDF Report"
+            icon="download"
+            onPress={() => navigation.navigate('Report', { farmId })}
+            variant="primary"
+            style={styles.exportButton}
+          />
+        </>
+      ) : (
+        <Card padding="md">
+          <Text style={styles.emptyText}>
+            Select a month and year, then tap "Generate Report"
           </Text>
-        </View>
-
-        <View style={styles.highlightSection}>
-          <Text style={styles.highlightTitle}>⚠️ Warnings</Text>
-          <Text style={styles.highlightText}>
-            • Increasing mite population trend{'\n'}
-            • Humidity levels above optimal in Week 2{'\n'}
-            • Reduced beneficial organism count
-          </Text>
-        </View>
-
-        <View style={styles.highlightSection}>
-          <Text style={styles.highlightTitle}>✅ Improvements</Text>
-          <Text style={styles.highlightText}>
-            • 25% reduction in whitefly population{'\n'}
-            • Successful biological control in Bay 1-3{'\n'}
-            • No emergency cases in final week
-          </Text>
-        </View>
-      </Card>
-
-      {/* Recommendations */}
-      <Card padding="md">
-        <Text style={styles.cardTitle}>Recommendations</Text>
-        <View style={styles.recommendation}>
-          <Text style={styles.recommendationNumber}>1</Text>
-          <Text style={styles.recommendationText}>
-            Increase beneficial organism release in affected areas
-          </Text>
-        </View>
-        <View style={styles.recommendation}>
-          <Text style={styles.recommendationNumber}>2</Text>
-          <Text style={styles.recommendationText}>
-            Monitor humidity levels more closely in Greenhouse 2
-          </Text>
-        </View>
-        <View style={styles.recommendation}>
-          <Text style={styles.recommendationNumber}>3</Text>
-          <Text style={styles.recommendationText}>
-            Consider chemical intervention for persistent thrips population
-          </Text>
-        </View>
-      </Card>
-
-      <Button
-        title="Export PDF Report"
-        icon="download"
-        onPress={() => console.log('Export PDF')}
-        variant="primary"
-        style={styles.exportButton}
-      />
+        </Card>
+      )}
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
   selectionCard: {
     marginBottom: spacing.md,
   },
@@ -215,27 +291,37 @@ const styles = StyleSheet.create({
   generateButton: {
     marginTop: spacing.sm,
   },
-  highlightSection: {
-    marginBottom: spacing.md,
+  severityStat: {
+    alignItems: 'center',
   },
-  highlightTitle: {
-    ...typograph.body,
-    color: colors.text,
-    fontWeight: '600',
+  severityLabel: {
+    ...typograph.caption,
+    color: colors.textSecondary,
     marginBottom: spacing.xs,
   },
-  highlightText: {
-    ...typograph.bodySmall,
-    color: colors.textSecondary,
-    lineHeight: 20,
+  severityValue: {
+    ...typograph.h2,
+    fontWeight: '700',
   },
-  recommendation: {
+  severityDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: colors.border,
+  },
+  pestItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: spacing.md,
-    gap: spacing.sm,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  recommendationNumber: {
+  pestLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  pestRank: {
     ...typograph.body,
     color: colors.surface,
     fontWeight: '700',
@@ -246,14 +332,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
   },
-  recommendationText: {
+  pestName: {
     ...typograph.body,
     color: colors.text,
-    flex: 1,
+    fontWeight: '600',
+  },
+  pestCount: {
+    ...typograph.bodySmall,
+    color: colors.textSecondary,
+  },
+  infoText: {
+    ...typograph.body,
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  emptyText: {
+    ...typograph.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    padding: spacing.xl,
   },
   exportButton: {
     marginTop: spacing.lg,
     marginBottom: spacing.xl,
   },
 });
-export default MonthlyReportScreen
+
+export default MonthlyReportScreen;
