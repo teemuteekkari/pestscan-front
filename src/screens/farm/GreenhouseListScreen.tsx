@@ -69,7 +69,7 @@ export const GreenhouseListScreen: React.FC<Props> = ({
   };
 
   const handleGreenhousePress = (greenhouse: GreenhouseDto) => {
-    navigation.navigate('GreenhouseDetail', { greenhouseId: greenhouse.id });
+    // navigation.navigate('GreenhouseDetail', { greenhouseId: greenhouse.id });
   };
 
   const handleCreateGreenhouse = () => {
